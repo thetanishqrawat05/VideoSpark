@@ -114,3 +114,25 @@ Quality goal: Achieve Google Veo 3 level quality using only open-source alternat
 - Static file serving for generated content
 
 The architecture supports scalable video generation with a clean separation between frontend, backend, and external services. The shared schema ensures type safety across the full stack, while the modular service design allows for easy integration of additional AI providers.
+
+## Recent Updates (July 2025)
+
+### Premium Multilingual TTS System
+- **High-Quality English Voices**: Sarah Professional, David Professional, Emma Natural, Marcus Narrator
+- **Premium Hindi Voices**: Priya Hindi, Arjun Hindi, Kavya Professional, Vikram Narrator  
+- **Advanced Audio Processing**: Professional harmonics, filtering, and mastering
+- **Multiple TTS Engines**: Coqui TTS, Bark AI, Indic TTS with fallback to eSpeak/Festival
+
+### Professional Video Generation
+- **4K Ultra Quality**: 3840x2160, 50 Mbps, 60fps, Rec.2020 HDR
+- **Cinema-Grade Color Grading**: Professional film look with color curves and vignetting
+- **Advanced Compositing**: Multi-layer video processing with motion graphics
+- **Broadcast Quality**: Professional mastering with industry-standard codecs
+
+### Enhanced User Experience
+- **Language-Specific Interface**: Separate English and Hindi voice selections
+- **Premium Quality Indicators**: Visual badges showing high-quality vs standard voices
+- **Comprehensive Setup Guide**: Complete installation instructions for all free tools
+- **Real-Time Voice Preview**: Test voices before generating videos
+
+All features remain 100% free with no API keys or subscriptions required.

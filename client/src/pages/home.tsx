@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { FreeNotice } from "@/components/free-notice";
+import { PremiumGuide } from "@/components/premium-guide";
 import { 
   Play, 
   Pause, 
@@ -103,7 +104,7 @@ export default function Home() {
   const [motionBlur, setMotionBlur] = useState([60]);
   
   // Voice settings
-  const [voiceProvider, setVoiceProvider] = useState("elevenlabs");
+  const [voiceProvider, setVoiceProvider] = useState("english");
   const [selectedVoice, setSelectedVoice] = useState<string>("");
   const [voiceScript, setVoiceScript] = useState("");
   const [voiceSpeed, setVoiceSpeed] = useState([1]);
@@ -173,7 +174,7 @@ export default function Home() {
       return response.json();
     },
     onSuccess: (data) => {
-      setPrompt(data.enhancedText);
+      setPrompt(data.enhancedPrompt || data.enhancedText);
       toast({
         title: "Prompt Enhanced",
         description: "Your prompt has been enhanced with AI suggestions.",
@@ -382,6 +383,11 @@ export default function Home() {
         {/* Free Notice */}
         <div className="absolute top-20 left-6 right-6 z-10">
           <FreeNotice />
+        </div>
+
+        {/* Premium Guide Overlay */}
+        <div className="absolute top-32 left-6 right-6 bottom-6 z-5 overflow-y-auto bg-primary/95 backdrop-blur-sm rounded-lg border border-slate-700 p-6">
+          <PremiumGuide />
         </div>
         {/* Left Sidebar - Generation Controls */}
         <div className="w-80 bg-secondary border-r border-slate-700 flex flex-col">
@@ -694,39 +700,68 @@ export default function Home() {
               </TabsList>
               
               <TabsContent value="voice" className="space-y-4 mt-4">
-                {/* Voice Provider */}
+                {/* Language Selection */}
                 <div>
-                  <Label className="text-sm font-medium text-slate-300 mb-2">Voice Provider</Label>
-                  <Select value={voiceProvider} onValueChange={setVoiceProvider}>
-                    <SelectTrigger className="bg-primary border-slate-600 focus:border-accent">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="elevenlabs">ElevenLabs (Premium)</SelectItem>
-                      <SelectItem value="openai">OpenAI TTS</SelectItem>
-                      <SelectItem value="google">Google Cloud TTS</SelectItem>
-                      <SelectItem value="azure">Azure Cognitive</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-sm font-medium text-slate-300 mb-2">Language</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant={voiceProvider === "english" ? "default" : "outline"}
+                      className="bg-primary border-slate-600 hover:border-accent"
+                      onClick={() => setVoiceProvider("english")}
+                    >
+                      🇺🇸 English
+                    </Button>
+                    <Button
+                      variant={voiceProvider === "hindi" ? "default" : "outline"}
+                      className="bg-primary border-slate-600 hover:border-accent"
+                      onClick={() => setVoiceProvider("hindi")}
+                    >
+                      🇮🇳 Hindi
+                    </Button>
+                  </div>
                 </div>
 
-                {/* Voice Selection */}
+                {/* Premium Voice Selection */}
                 <div>
-                  <Label className="text-sm font-medium text-slate-300 mb-2">Voice Model</Label>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {voices?.map((voice: Voice) => (
+                  <Label className="text-sm font-medium text-slate-300 mb-2">
+                    Premium {voiceProvider === "english" ? "English" : "Hindi"} Voices
+                    <span className="text-xs text-green-400 ml-2">100% FREE</span>
+                  </Label>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {voices
+                      ?.filter((voice: any) => voice.language === (voiceProvider === "english" ? "en" : "hi"))
+                      ?.sort((a: any, b: any) => {
+                        // Sort premium voices first
+                        if (a.quality === "premium" && b.quality !== "premium") return -1;
+                        if (b.quality === "premium" && a.quality !== "premium") return 1;
+                        return 0;
+                      })
+                      ?.map((voice: any) => (
                       <div
                         key={voice.id}
                         className={`bg-primary border rounded-lg p-3 cursor-pointer transition-colors ${
-                          selectedVoice === voice.id ? "border-accent" : "border-slate-600 hover:border-accent"
+                          selectedVoice === voice.id ? "border-accent bg-accent/10" : "border-slate-600 hover:border-accent"
                         }`}
                         onClick={() => setSelectedVoice(voice.id)}
                       >
                         <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-sm font-medium">{voice.name}</div>
-                            <div className="text-xs text-slate-400">
-                              {voice.gender} • {voice.style} • {voice.language}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <div className="text-sm font-medium">{voice.name}</div>
+                              {voice.quality === "premium" && (
+                                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                  PREMIUM
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-xs text-slate-400 mt-1">
+                              {voice.gender === "female" ? "👩" : "👨"} {voice.description}
+                            </div>
+                            <div className="text-xs text-green-400 mt-1">
+                              {voice.provider === "coqui" && "🎙️ Coqui TTS"}
+                              {voice.provider === "bark" && "🗣️ Bark AI"}
+                              {voice.provider === "indic-tts" && "🇮🇳 Indic TTS"}
+                              {voice.provider === "espeak" && "📢 eSpeak"}
                             </div>
                           </div>
                           <Button
@@ -737,6 +772,7 @@ export default function Home() {
                               previewVoiceMutation.mutate({ voiceId: voice.id, provider: voice.provider });
                             }}
                             disabled={previewVoiceMutation.isPending}
+                            className="hover:bg-accent/20"
                           >
                             <Play size={14} />
                           </Button>
