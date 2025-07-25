@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(15, 25%, 6%);
+  --primary-foreground: hsl(60, 9.1%, 97.8%);
+  --secondary: hsl(240, 10%, 16%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(262, 83%, 58%);
+  --accent-foreground: hsl(211, 100%, 99%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  --success: hsl(142, 76%, 36%);
+  --danger: hsl(0, 84%, 60%);
+  --warning: hsl(38, 92%, 50%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(15, 25%, 6%);
+  --primary-foreground: hsl(60, 9.1%, 97.8%);
+  --secondary: hsl(240, 10%, 16%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(262, 83%, 58%);
+  --accent-foreground: hsl(211, 100%, 99%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+  --success: hsl(142, 76%, 36%);
+  --danger: hsl(0, 84%, 60%);
+  --warning: hsl(38, 92%, 50%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  /* Custom scrollbar for dark theme */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: hsl(240, 3.7%, 15.9%);
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: hsl(240, 5%, 64.9%);
+    border-radius: 3px;
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: hsl(262, 83%, 58%);
+  }
+
+  /* Video player custom styles */
+  video {
+    @apply rounded-lg;
+  }
+
+  /* Progress animation */
+  @keyframes progress-fill {
+    0% { width: 0%; }
+    100% { width: var(--progress-value); }
+  }
+
+  .progress-bar {
+    animation: progress-fill 0.5s ease-out;
+  }
+
+  /* Gradient text effect */
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(262, 83%, 58%), hsl(290, 85%, 65%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Avatar selection hover effect */
+  .avatar-card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease-out;
+  }
+
+  /* Voice card selection animation */
+  .voice-card {
+    transition: all 0.2s ease-out;
+  }
+
+  .voice-card:hover {
+    transform: scale(1.02);
+  }
+
+  /* Generation button pulse effect */
+  .generate-button {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .generate-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .generate-button:hover::before {
+    left: 100%;
+  }
+}
