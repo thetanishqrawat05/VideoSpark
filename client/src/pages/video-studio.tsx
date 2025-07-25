@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Navigation } from "@/components/navigation";
 import { TemplateSelector } from "@/components/template-selector";
 import { SceneEditor } from "@/components/scene-editor";
 import { VideoPreview } from "@/components/video-preview";
@@ -313,15 +314,17 @@ export default function VideoStudio() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Direct Text to Video
-          </h1>
-          <p className="text-muted-foreground">Enter your text and get a high-quality video with voice, animations & BGM</p>
-        </div>
+    <>
+      <Navigation />
+      <div className="min-h-screen w-full px-6 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8 max-w-7xl mx-auto">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Direct Text to Video
+            </h1>
+            <p className="text-muted-foreground">Enter your text and get a high-quality video with voice, animations & BGM</p>
+          </div>
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className="gap-1">
             <Zap className="h-3 w-3" />
@@ -352,21 +355,21 @@ export default function VideoStudio() {
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-4 gap-8">
         {/* Left Panel - Creation Tools */}
-        <div className="lg:col-span-2">
+        <div className="xl:col-span-3">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="script" className="gap-2">
-                <FileText className="h-4 w-4" />
+            <TabsList className="grid w-full grid-cols-3 h-12 p-1">
+              <TabsTrigger value="script" className="gap-2 text-base font-medium">
+                <FileText className="h-5 w-5" />
                 Text Input
               </TabsTrigger>
-              <TabsTrigger value="settings" className="gap-2">
-                <Settings className="h-4 w-4" />
+              <TabsTrigger value="settings" className="gap-2 text-base font-medium">
+                <Settings className="h-5 w-5" />
                 Options
               </TabsTrigger>
-              <TabsTrigger value="preview" className="gap-2">
-                <Eye className="h-4 w-4" />
+              <TabsTrigger value="preview" className="gap-2 text-base font-medium">
+                <Eye className="h-5 w-5" />
                 Preview
               </TabsTrigger>
             </TabsList>
@@ -388,16 +391,16 @@ export default function VideoStudio() {
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <Label>Text for Video</Label>
+                  <div className="space-y-3">
+                    <Label className="text-lg font-medium">Text for Video</Label>
                     <Textarea
                       value={fullScript}
                       onChange={(e) => setFullScript(e.target.value)}
                       placeholder="Enter your text here. For example: 'Welcome to our new product launch. This revolutionary innovation will change the way you work. Experience the future today and join thousands of satisfied customers.'"
-                      rows={8}
-                      className="min-h-[200px] text-lg leading-relaxed"
+                      rows={10}
+                      className="min-h-[250px] text-lg leading-relaxed resize-none border-2 focus:border-primary/50 transition-colors"
                     />
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-4 py-2">
                       <span>{fullScript.length} characters</span>
                       <span>Estimated duration: {Math.max(5, Math.min(60, fullScript.length * 0.05)).toFixed(0)}s</span>
                     </div>
@@ -435,30 +438,32 @@ export default function VideoStudio() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <Button 
                       onClick={() => parseScriptIntoScenes(fullScript)}
                       disabled={!fullScript.trim()}
-                      className="flex-1 gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                      size="lg"
+                      className="flex-1 gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all"
                     >
-                      <Sparkles className="h-4 w-4" />
+                      <Sparkles className="h-5 w-5" />
                       Create Video Automatically
                     </Button>
                     <Button 
                       variant="outline" 
-                      className="gap-2"
+                      size="lg"
+                      className="gap-2 px-6 border-2"
                       onClick={() => setActiveTab("settings")}
                       disabled={!fullScript.trim()}
                     >
                       <WandSparkles className="h-4 w-4" />
-                      Advanced Options
+                      Advanced
                     </Button>
                   </div>
 
                   {/* Quick Examples */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium">Quick Start Examples:</Label>
-                    <div className="grid grid-cols-1 gap-2">
+                  <div className="space-y-4 bg-gradient-to-r from-muted/30 to-muted/10 rounded-lg p-4 border">
+                    <Label className="text-base font-semibold">Quick Start Examples:</Label>
+                    <div className="grid grid-cols-1 gap-3">
                       {[
                         "Welcome to our innovative product that will transform your business operations and boost productivity by 50%.",
                         "Discover the beauty of nature in this stunning location where mountains meet the ocean in perfect harmony.",
@@ -467,9 +472,10 @@ export default function VideoStudio() {
                         <Button
                           key={index}
                           variant="ghost"
-                          className="text-left justify-start h-auto p-3 text-sm text-muted-foreground hover:text-foreground"
+                          className="text-left justify-start h-auto p-4 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent hover:border-muted-foreground/20 rounded-lg transition-all"
                           onClick={() => setFullScript(example)}
                         >
+                          <span className="text-xs text-muted-foreground mr-2">Try:</span>
                           "{example}"
                         </Button>
                       ))}
@@ -649,7 +655,7 @@ export default function VideoStudio() {
         {/* Right Panel - Quick Stats & Info */}
         <div className="space-y-6">
           {/* Project Stats */}
-          <Card>
+          <Card className="sticky top-6">
             <CardHeader>
               <CardTitle className="text-lg">Project Overview</CardTitle>
             </CardHeader>
@@ -720,6 +726,7 @@ export default function VideoStudio() {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
