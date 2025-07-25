@@ -14,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Navigation } from "@/components/navigation";
+
 import { Link } from "wouter";
 import { TemplateSelector } from "@/components/template-selector";
 import { SceneEditor } from "@/components/scene-editor";
@@ -365,7 +365,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      <Navigation />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6">

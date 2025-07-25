@@ -14,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Navigation } from "@/components/navigation";
+
 import { TemplateSelector } from "@/components/template-selector";
 import { SceneEditor } from "@/components/scene-editor";
 import { VideoPreview } from "@/components/video-preview";
@@ -314,9 +314,7 @@ export default function VideoStudio() {
   };
 
   return (
-    <>
-      <Navigation />
-      <div className="min-h-screen w-full px-6 py-8">
+    <div className="min-h-screen w-full px-6 py-8">
         {/* Page Header */}
         <div className="max-w-7xl mx-auto mb-8">
           <div>
@@ -726,7 +724,6 @@ export default function VideoStudio() {
           )}
         </div>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
