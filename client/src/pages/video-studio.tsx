@@ -318,9 +318,9 @@ export default function VideoStudio() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            AI Video Studio
+            Direct Text to Video
           </h1>
-          <p className="text-muted-foreground">Create professional videos with Google VEO3-level quality</p>
+          <p className="text-muted-foreground">Enter your text and get a high-quality video with voice, animations & BGM</p>
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className="gap-1">
@@ -356,22 +356,14 @@ export default function VideoStudio() {
         {/* Left Panel - Creation Tools */}
         <div className="lg:col-span-2">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="template" className="gap-2">
-                <Target className="h-4 w-4" />
-                Template
-              </TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="script" className="gap-2">
                 <FileText className="h-4 w-4" />
-                Script
-              </TabsTrigger>
-              <TabsTrigger value="scenes" className="gap-2">
-                <Layers className="h-4 w-4" />
-                Scenes
+                Text Input
               </TabsTrigger>
               <TabsTrigger value="settings" className="gap-2">
                 <Settings className="h-4 w-4" />
-                Settings
+                Options
               </TabsTrigger>
               <TabsTrigger value="preview" className="gap-2">
                 <Eye className="h-4 w-4" />
@@ -379,77 +371,110 @@ export default function VideoStudio() {
               </TabsTrigger>
             </TabsList>
 
-            {/* Template Selection */}
-            <TabsContent value="template">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    Choose Your Style
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <TemplateSelector
-                    selectedTemplate={selectedTemplate}
-                    onTemplateSelect={handleTemplateSelect}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
 
-            {/* Script Input */}
+
+
+
+            {/* Text Input */}
             <TabsContent value="script">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
-                    Write Your Script
+                    Enter Your Text
                   </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Simply type your text and we'll automatically create a professional video with voice, animations, and background music.
+                  </p>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label>Video Script</Label>
+                    <Label>Text for Video</Label>
                     <Textarea
                       value={fullScript}
                       onChange={(e) => setFullScript(e.target.value)}
-                      placeholder="Write your video script here. Each line will become a scene..."
-                      rows={10}
-                      className="min-h-[200px]"
+                      placeholder="Enter your text here. For example: 'Welcome to our new product launch. This revolutionary innovation will change the way you work. Experience the future today and join thousands of satisfied customers.'"
+                      rows={8}
+                      className="min-h-[200px] text-lg leading-relaxed"
                     />
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>{fullScript.length} characters</span>
+                      <span>Estimated duration: {Math.max(5, Math.min(60, fullScript.length * 0.05)).toFixed(0)}s</span>
+                    </div>
                   </div>
+                  
+                  {/* Quick Voice Selection */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Voice Style</Label>
+                      <Select defaultValue="professional">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="professional">Professional (Recommended)</SelectItem>
+                          <SelectItem value="natural">Natural & Friendly</SelectItem>
+                          <SelectItem value="narrator">Narrator Style</SelectItem>
+                          <SelectItem value="marketing">Marketing Tone</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Animation Style</Label>
+                      <Select defaultValue="auto">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="auto">Auto-select Best</SelectItem>
+                          <SelectItem value="fade">Elegant Fade</SelectItem>
+                          <SelectItem value="dynamic">Dynamic Movement</SelectItem>
+                          <SelectItem value="minimal">Clean & Minimal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   <div className="flex gap-2">
                     <Button 
                       onClick={() => parseScriptIntoScenes(fullScript)}
                       disabled={!fullScript.trim()}
-                      className="gap-2"
+                      className="flex-1 gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                     >
-                      <Wand2 className="h-4 w-4" />
-                      Parse into Scenes
+                      <Sparkles className="h-4 w-4" />
+                      Create Video Automatically
                     </Button>
-                    <Button variant="outline" className="gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="gap-2"
+                      onClick={() => setActiveTab("settings")}
+                      disabled={!fullScript.trim()}
+                    >
                       <WandSparkles className="h-4 w-4" />
-                      AI Enhance
+                      Advanced Options
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
 
-            {/* Scene Editor */}
-            <TabsContent value="scenes">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Layers className="h-5 w-5" />
-                    Scene Editor
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <SceneEditor
-                    scenes={scenes}
-                    onScenesChange={setScenes}
-                    voices={voices}
-                  />
+                  {/* Quick Examples */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">Quick Start Examples:</Label>
+                    <div className="grid grid-cols-1 gap-2">
+                      {[
+                        "Welcome to our innovative product that will transform your business operations and boost productivity by 50%.",
+                        "Discover the beauty of nature in this stunning location where mountains meet the ocean in perfect harmony.",
+                        "Learn the secrets of successful entrepreneurs and unlock your potential with our proven strategies."
+                      ].map((example, index) => (
+                        <Button
+                          key={index}
+                          variant="ghost"
+                          className="text-left justify-start h-auto p-3 text-sm text-muted-foreground hover:text-foreground"
+                          onClick={() => setFullScript(example)}
+                        >
+                          "{example}"
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
