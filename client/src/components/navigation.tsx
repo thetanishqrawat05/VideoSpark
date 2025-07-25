@@ -22,7 +22,7 @@ export function Navigation() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center px-6">
+      <div className="w-full max-w-none flex h-16 items-center px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-3 mr-8">
           <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">

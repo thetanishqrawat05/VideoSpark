@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Navigation } from "@/components/navigation";
 import { Link } from "wouter";
 import { TemplateSelector } from "@/components/template-selector";
 import { SceneEditor } from "@/components/scene-editor";
@@ -364,40 +365,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Header */}
-      <header className="bg-slate-900 border-b border-slate-800 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <Video className="text-white" size={20} />
-              </div>
-              <h1 className="text-2xl font-bold text-slate-100">VeoGen Pro</h1>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <span className="text-slate-400 hover:text-slate-100 cursor-pointer transition-colors">Dashboard</span>
-              <span className="text-slate-100 border-b-2 border-purple-500 pb-1">Generator</span>
-              <Link to="/analyzer" className="text-slate-400 hover:text-slate-100 transition-colors">
-                Video Analyzer
-              </Link>
-              <span className="text-slate-400 hover:text-slate-100 cursor-pointer transition-colors">Gallery</span>
-              <span className="text-slate-400 hover:text-slate-100 cursor-pointer transition-colors">Settings</span>
-            </nav>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-sm text-slate-300">
-              Credits: <span className="text-green-400 font-medium">1,250</span>
-            </div>
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white border-0">
-              <Crown size={16} className="mr-2" />
-              Upgrade
-            </Button>
-            <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
-              <User size={16} className="text-slate-300" />
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navigation />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6">

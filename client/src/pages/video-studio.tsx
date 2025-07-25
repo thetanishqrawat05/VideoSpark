@@ -317,8 +317,8 @@ export default function VideoStudio() {
     <>
       <Navigation />
       <div className="min-h-screen w-full px-6 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8 max-w-7xl mx-auto">
+        {/* Page Header */}
+        <div className="max-w-7xl mx-auto mb-8">
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Direct Text to Video
