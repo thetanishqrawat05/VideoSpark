@@ -17,7 +17,7 @@ export function FreeNotice() {
   if (!isVisible) return null;
 
   return (
-    <Card className="bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-700 mb-6">
+    <Card className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-green-600/50 mb-6">
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-3">
@@ -34,14 +34,14 @@ export function FreeNotice() {
               </div>
               
               <p className="text-green-200 text-sm mb-3">
-                This platform now works completely free without any paid API subscriptions. 
+                This platform works completely free without any paid API subscriptions. 
                 All features use open-source alternatives that achieve professional quality.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                 <div className="flex items-center space-x-2 text-green-200">
                   <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span className="text-sm">Free TTS voices (eSpeak, Festival, Pico)</span>
+                  <span className="text-sm">Premium TTS voices (Coqui, Bark AI)</span>
                 </div>
                 <div className="flex items-center space-x-2 text-green-200">
                   <CheckCircle className="w-4 h-4 text-green-400" />
@@ -53,7 +53,7 @@ export function FreeNotice() {
                 </div>
                 <div className="flex items-center space-x-2 text-green-200">
                   <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span className="text-sm">Free professional video generation guide</span>
+                  <span className="text-sm">Professional video generation guide</span>
                 </div>
               </div>
               

@@ -28,7 +28,10 @@ import {
   VolumeX,
   Expand,
   WandSparkles,
-  Settings
+  Settings,
+  CheckCircle,
+  Palette,
+  Zap
 } from "lucide-react";
 
 interface VideoProject {
@@ -344,594 +347,418 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-primary text-slate-50">
+    <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      <header className="bg-secondary border-b border-slate-700 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-accent to-purple-600 rounded-lg flex items-center justify-center">
-              <Video className="text-white" size={16} />
+      <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <Video className="text-white" size={20} />
+              </div>
+              <h1 className="text-2xl font-bold">VeoGen Pro</h1>
             </div>
-            <h1 className="text-xl font-bold">VeoGen Pro</h1>
+            <nav className="hidden md:flex space-x-8">
+              <span className="text-gray-400 hover:text-white cursor-pointer">Dashboard</span>
+              <span className="text-white border-b-2 border-purple-500 pb-1">Generator</span>
+              <Link to="/analyzer" className="text-gray-400 hover:text-white transition-colors">
+                Video Analyzer
+              </Link>
+              <span className="text-gray-400 hover:text-white cursor-pointer">Gallery</span>
+              <span className="text-gray-400 hover:text-white cursor-pointer">Settings</span>
+            </nav>
           </div>
-          <nav className="hidden md:flex space-x-6 ml-8">
-            <span className="text-slate-300">Dashboard</span>
-            <span className="text-white border-b-2 border-accent pb-1">Generator</span>
-            <Link to="/analyzer" className="text-slate-300 hover:text-white transition-colors">
-              Video Analyzer
-            </Link>
-            <span className="text-slate-300">Gallery</span>
-            <span className="text-slate-300">Settings</span>
-          </nav>
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-slate-400">
-            <span className="text-success">●</span> Credits: 1,250
-          </div>
-          <Button variant="default" size="sm" className="bg-accent hover:bg-purple-700">
-            <Crown size={16} className="mr-2" />
-            Upgrade
-          </Button>
-          <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center">
-            <User size={16} />
+          <div className="flex items-center space-x-4">
+            <div className="text-sm text-gray-300">
+              Credits: <span className="text-green-400">1,250</span>
+            </div>
+            <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+              <Crown size={16} className="mr-2" />
+              Upgrade
+            </Button>
+            <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+              <User size={16} />
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="max-w-7xl mx-auto p-6">
         {/* Free Notice */}
-        <div className="absolute top-20 left-6 right-6 z-10">
-          <FreeNotice />
-        </div>
+        <FreeNotice />
 
-        {/* Premium Guide Overlay */}
-        <div className="absolute top-32 left-6 right-6 bottom-6 z-5 overflow-y-auto bg-primary/95 backdrop-blur-sm rounded-lg border border-slate-700 p-6">
-          <PremiumGuide />
-        </div>
-        {/* Left Sidebar - Generation Controls */}
-        <div className="w-80 bg-secondary border-r border-slate-700 flex flex-col">
-          <div className="p-6 border-b border-slate-700">
-            <h2 className="text-lg font-semibold mb-4">Text to Video</h2>
-            
-            {/* Prompt Input */}
-            <div className="mb-4">
-              <Label className="text-sm font-medium text-slate-300 mb-2">Video Prompt</Label>
-              <Textarea
-                className="w-full h-24 bg-primary border-slate-600 focus:border-accent resize-none"
-                placeholder="Describe your video: A golden retriever playing in a field of sunflowers at sunset, with gentle wind blowing through the flowers..."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-2 text-accent hover:text-accent"
-                onClick={() => enhancePromptMutation.mutate(prompt)}
-                disabled={!prompt.trim() || enhancePromptMutation.isPending}
-              >
-                <WandSparkles size={14} className="mr-1" />
-                {enhancePromptMutation.isPending ? "Enhancing..." : "Enhance with AI"}
-              </Button>
-            </div>
-
-            {/* Style and Duration */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div>
-                <Label className="text-sm font-medium text-slate-300 mb-1">Style</Label>
-                <Select value={style} onValueChange={setStyle}>
-                  <SelectTrigger className="bg-primary border-slate-600 focus:border-accent">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cinematic">Cinematic</SelectItem>
-                    <SelectItem value="realistic">Realistic</SelectItem>
-                    <SelectItem value="animated">Animated</SelectItem>
-                    <SelectItem value="documentary">Documentary</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-sm font-medium text-slate-300 mb-1">Duration</Label>
-                <Select value={duration} onValueChange={setDuration}>
-                  <SelectTrigger className="bg-primary border-slate-600 focus:border-accent">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="4">4 seconds</SelectItem>
-                    <SelectItem value="8">8 seconds</SelectItem>
-                    <SelectItem value="16">16 seconds</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Resolution and Aspect Ratio */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <div>
-                <Label className="text-sm font-medium text-slate-300 mb-1">Resolution</Label>
-                <Select value={resolution} onValueChange={setResolution}>
-                  <SelectTrigger className="bg-primary border-slate-600 focus:border-accent">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="720p">720p HD</SelectItem>
-                    <SelectItem value="1080p">1080p FHD</SelectItem>
-                    <SelectItem value="4k">4K UHD</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-sm font-medium text-slate-300 mb-1">Aspect</Label>
-                <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                  <SelectTrigger className="bg-primary border-slate-600 focus:border-accent">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="16:9">16:9</SelectItem>
-                    <SelectItem value="9:16">9:16</SelectItem>
-                    <SelectItem value="1:1">1:1</SelectItem>
-                    <SelectItem value="4:3">4:3</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Generate Button */}
-            <Button 
-              className="w-full bg-gradient-to-r from-accent to-purple-600 hover:from-purple-600 hover:to-accent text-white font-semibold"
-              onClick={handleGenerateVideo}
-              disabled={generateVideoMutation.isPending || !!currentJob}
-            >
-              {generateVideoMutation.isPending ? (
-                <>Initializing...</>
-              ) : currentJob ? (
-                <>Generating...</>
-              ) : (
-                <>
-                  <WandSparkles className="mr-2" size={16} />
-                  Generate Video
-                </>
-              )}
-            </Button>
-          </div>
-
-          {/* Advanced Settings */}
-          <div className="p-6 overflow-y-auto">
-            <h3 className="text-md font-semibold mb-4 text-slate-200">Advanced Settings</h3>
-            
-            {/* Camera Controls */}
-            <div className="mb-6">
-              <h4 className="text-sm font-medium text-slate-300 mb-3">Camera Movement</h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Pan Movement</span>
-                  <Switch 
-                    checked={cameraSettings.pan}
-                    onCheckedChange={(checked) => setCameraSettings(prev => ({ ...prev, pan: checked }))}
+        {/* Main Layout */}
+        <div className="grid grid-cols-12 gap-6 mt-6">
+          {/* Left Sidebar - Text to Video */}
+          <div className="col-span-3">
+            <Card className="bg-gray-800 border-gray-700">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-6">Text to Video</h2>
+                
+                {/* Prompt Input */}
+                <div className="mb-6">
+                  <Label className="text-sm font-medium text-gray-300 mb-2 block">Video Prompt</Label>
+                  <Textarea
+                    className="w-full h-32 bg-gray-900 border-gray-600 focus:border-purple-500 resize-none text-white placeholder-gray-400"
+                    placeholder="Describe your video: A golden retriever playing in a field of sunflowers at sunset, with gentle wind blowing through the flowers..."
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
                   />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-2 text-purple-400 hover:text-purple-300"
+                    onClick={() => enhancePromptMutation.mutate(prompt)}
+                    disabled={!prompt.trim() || enhancePromptMutation.isPending}
+                  >
+                    <WandSparkles size={14} className="mr-1" />
+                    {enhancePromptMutation.isPending ? "Enhancing..." : "Enhance with AI"}
+                  </Button>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Zoom Effects</span>
-                  <Switch 
-                    checked={cameraSettings.zoom}
-                    onCheckedChange={(checked) => setCameraSettings(prev => ({ ...prev, zoom: checked }))}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Object Tracking</span>
-                  <Switch 
-                    checked={cameraSettings.tracking}
-                    onCheckedChange={(checked) => setCameraSettings(prev => ({ ...prev, tracking: checked }))}
-                  />
-                </div>
-              </div>
-            </div>
 
-            {/* Physics & Realism */}
-            <div className="mb-6">
-              <h4 className="text-sm font-medium text-slate-300 mb-3">Physics & Realism</h4>
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-xs text-slate-400 mb-1">Physics Accuracy</Label>
-                  <Slider
-                    value={physicsAccuracy}
-                    onValueChange={setPhysicsAccuracy}
-                    max={100}
-                    step={1}
-                    className="w-full"
-                  />
+                {/* Style and Duration */}
+                <div className="grid grid-cols-1 gap-4 mb-6">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-300 mb-2 block">Style</Label>
+                    <Select value={style} onValueChange={setStyle}>
+                      <SelectTrigger className="bg-gray-900 border-gray-600 focus:border-purple-500">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cinematic">Cinematic</SelectItem>
+                        <SelectItem value="realistic">Realistic</SelectItem>
+                        <SelectItem value="animated">Animated</SelectItem>
+                        <SelectItem value="documentary">Documentary</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-300 mb-2 block">Duration</Label>
+                    <Select value={duration} onValueChange={setDuration}>
+                      <SelectTrigger className="bg-gray-900 border-gray-600 focus:border-purple-500">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="4">4 seconds</SelectItem>
+                        <SelectItem value="8">8 seconds</SelectItem>
+                        <SelectItem value="16">16 seconds</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-xs text-slate-400 mb-1">Motion Blur</Label>
-                  <Slider
-                    value={motionBlur}
-                    onValueChange={setMotionBlur}
-                    max={100}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
-              </div>
-            </div>
 
-            {/* Negative Prompt */}
-            <div>
-              <Label className="text-sm font-medium text-slate-300 mb-2">Negative Prompt</Label>
-              <Textarea
-                className="w-full h-16 bg-primary border-slate-600 focus:border-accent resize-none"
-                placeholder="What to avoid: blurry, low quality, distorted faces..."
-                value={negativePrompt}
-                onChange={(e) => setNegativePrompt(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Center Canvas */}
-        <div className="flex-1 flex flex-col bg-primary">
-          <div className="p-6 border-b border-slate-700">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Video Preview</h2>
-              <div className="flex items-center space-x-3">
-                <div className="text-sm text-slate-400">
-                  Status: <span className="text-slate-300">
-                    {currentJob ? (jobStatus?.status || "Loading...") : "Ready"}
-                  </span>
+                {/* Resolution and Aspect Ratio */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-300 mb-2 block">Resolution</Label>
+                    <Select value={resolution} onValueChange={setResolution}>
+                      <SelectTrigger className="bg-gray-900 border-gray-600 focus:border-purple-500">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="720p">720p HD</SelectItem>
+                        <SelectItem value="1080p">1080p FHD</SelectItem>
+                        <SelectItem value="4k">4K UHD</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-300 mb-2 block">Aspect</Label>
+                    <Select value={aspectRatio} onValueChange={setAspectRatio}>
+                      <SelectTrigger className="bg-gray-900 border-gray-600 focus:border-purple-500">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="16:9">16:9</SelectItem>
+                        <SelectItem value="9:16">9:16</SelectItem>
+                        <SelectItem value="1:1">1:1</SelectItem>
+                        <SelectItem value="4:3">4:3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <Button variant="ghost" size="sm">
-                  <Expand size={16} />
+
+                {/* Generate Button */}
+                <Button 
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3"
+                  onClick={handleGenerateVideo}
+                  disabled={generateVideoMutation.isPending || !!currentJob}
+                >
+                  {generateVideoMutation.isPending ? (
+                    <>Initializing...</>
+                  ) : currentJob ? (
+                    <>Generating...</>
+                  ) : (
+                    <>
+                      <WandSparkles className="mr-2" size={16} />
+                      Generate Video
+                    </>
+                  )}
                 </Button>
               </div>
-            </div>
+            </Card>
           </div>
 
-          <div className="flex-1 p-6 flex items-center justify-center">
-            <div className="w-full max-w-4xl">
-              {/* Video Player Container */}
-              <div className="relative bg-slate-900 rounded-xl overflow-hidden aspect-video border border-slate-600">
-                {jobStatus?.result?.videoUrl ? (
-                  <video
-                    className="w-full h-full"
-                    controls
-                    poster={jobStatus.result.thumbnailUrl}
-                  >
-                    <source src={jobStatus.result.videoUrl} type="video/mp4" />
-                  </video>
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center mb-4 mx-auto">
-                        <Play className="text-slate-400" size={24} />
+          {/* Center - Video Preview */}
+          <div className="col-span-6">
+            {/* Premium Quality Banner */}
+            <div className="mb-6 text-center">
+              <div className="inline-flex items-center gap-2 bg-purple-600/20 border border-purple-500/30 rounded-full px-4 py-2 mb-4">
+                <Crown className="text-purple-400" size={16} />
+                <span className="text-sm font-medium text-purple-300">Premium Quality - 100% Free</span>
+              </div>
+              <h2 className="text-3xl font-bold mb-2">Professional AI Video Generation</h2>
+              <p className="text-gray-400">Achieve Google Veo 3 level quality using completely free, open-source tools</p>
+            </div>
+
+            {/* Video Preview Container */}
+            <Card className="bg-gray-800 border-gray-700 mb-6">
+              <div className="p-6">
+                <div className="relative bg-black rounded-xl overflow-hidden aspect-video border border-gray-600">
+                  {jobStatus?.result?.videoUrl ? (
+                    <video
+                      className="w-full h-full"
+                      controls
+                      poster={jobStatus.result.thumbnailUrl}
+                    >
+                      <source src={jobStatus.result.videoUrl} type="video/mp4" />
+                    </video>
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center mb-4 mx-auto">
+                          <Play className="text-gray-400" size={32} />
+                        </div>
+                        <h3 className="text-xl font-medium text-gray-300 mb-2">
+                          {currentJob ? "Generating Video..." : "Ready to Generate"}
+                        </h3>
+                        <p className="text-gray-500 text-sm max-w-md">
+                          {currentJob 
+                            ? jobStatus?.currentStep || "Processing your request..." 
+                            : "Enter your prompt and click Generate Video to create your AI-powered video"
+                          }
+                        </p>
                       </div>
-                      <h3 className="text-lg font-medium text-slate-300 mb-2">
-                        {currentJob ? "Generating Video..." : "Ready to Generate"}
-                      </h3>
-                      <p className="text-slate-500 text-sm">
-                        {currentJob 
-                          ? jobStatus?.currentStep || "Processing your request..." 
-                          : "Enter your prompt and click Generate Video to create your AI-powered video"
+                    </div>
+                  )}
+                </div>
+
+                {/* Generation Progress */}
+                {currentJob && jobStatus && (
+                  <div className="mt-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">
+                        {jobStatus.currentStep || "Processing..."}
+                      </span>
+                      <span className="text-sm text-gray-400">
+                        {jobStatus.estimatedTimeRemaining ? 
+                          `${formatTime(jobStatus.estimatedTimeRemaining)} remaining` : 
+                          "Calculating time..."
                         }
-                      </p>
+                      </span>
+                    </div>
+                    <Progress 
+                      value={jobStatus.progress || 0} 
+                      className="h-2 mb-2" 
+                    />
+                    <div className="text-xs text-gray-400">
+                      {jobStatus.currentStep || "Processing your video generation request..."}
                     </div>
                   </div>
                 )}
               </div>
+            </Card>
 
-              {/* Generation Progress */}
-              {currentJob && jobStatus && (
-                <div className="mt-6">
-                  <Card className="bg-secondary border-slate-600">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">
-                          {jobStatus.currentStep || "Processing..."}
-                        </span>
-                        <span className="text-sm text-slate-400">
-                          {jobStatus.estimatedTimeRemaining ? 
-                            `${formatTime(jobStatus.estimatedTimeRemaining)} remaining` : 
-                            "Calculating time..."
-                          }
-                        </span>
-                      </div>
-                      <Progress 
-                        value={jobStatus.progress || 0} 
-                        className="h-2 mb-2" 
-                      />
-                      <div className="text-xs text-slate-400">
-                        {jobStatus.currentStep || "Processing your video generation request..."}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {/* Export Options */}
-              <div className="mt-6 grid grid-cols-3 gap-4">
-                <Button 
-                  variant="outline" 
-                  className="bg-secondary border-slate-600 hover:bg-slate-600 text-left p-3 h-auto"
-                  onClick={() => handleExport("mp4")}
-                  disabled={!jobStatus?.result?.videoUrl}
-                >
-                  <div className="flex flex-col items-start">
-                    <Download className="text-accent mb-2" size={16} />
-                    <div className="text-sm font-medium">Export MP4</div>
-                    <div className="text-xs text-slate-400">Standard video format</div>
-                  </div>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="bg-secondary border-slate-600 hover:bg-slate-600 text-left p-3 h-auto"
-                  onClick={() => handleExport("gif")}
-                  disabled={!jobStatus?.result?.videoUrl}
-                >
-                  <div className="flex flex-col items-start">
-                    <ImageIcon className="text-accent mb-2" size={16} />
-                    <div className="text-sm font-medium">Export GIF</div>
-                    <div className="text-xs text-slate-400">Animated image</div>
-                  </div>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="bg-secondary border-slate-600 hover:bg-slate-600 text-left p-3 h-auto"
-                  disabled={!jobStatus?.result?.videoUrl}
-                >
-                  <div className="flex flex-col items-start">
-                    <Share2 className="text-accent mb-2" size={16} />
-                    <div className="text-sm font-medium">Share Link</div>
-                    <div className="text-xs text-slate-400">Public viewing link</div>
-                  </div>
-                </Button>
-              </div>
+            {/* Action Cards */}
+            <div className="grid grid-cols-4 gap-4 mb-6">
+              <Card className="bg-gray-800 border-gray-700 p-4 text-center hover:bg-gray-750 transition-colors cursor-pointer">
+                <WandSparkles className="mx-auto text-blue-400 mb-2" size={24} />
+                <div className="text-sm font-medium">Enhance with AI</div>
+                <div className="text-xs text-gray-400">English & Hindi</div>
+              </Card>
+              <Card className="bg-gray-800 border-gray-700 p-4 text-center hover:bg-gray-750 transition-colors cursor-pointer">
+                <Video className="mx-auto text-green-400 mb-2" size={24} />
+                <div className="text-sm font-medium">Ultra HD Quality</div>
+                <div className="text-xs text-gray-400">Ultra HD Quality</div>
+              </Card>
+              <Card className="bg-gray-800 border-gray-700 p-4 text-center hover:bg-gray-750 transition-colors cursor-pointer">
+                <Palette className="mx-auto text-purple-400 mb-2" size={24} />
+                <div className="text-sm font-medium">Professional Look</div>
+                <div className="text-xs text-gray-400">Professional Look</div>
+              </Card>
+              <Card className="bg-gray-800 border-gray-700 p-4 text-center hover:bg-gray-750 transition-colors cursor-pointer">
+                <Zap className="mx-auto text-yellow-400 mb-2" size={24} />
+                <div className="text-sm font-medium">Completely Free</div>
+                <div className="text-xs text-gray-400">Completely Free</div>
+              </Card>
             </div>
-          </div>
-        </div>
 
-        {/* Right Sidebar - AI Voice & Audio */}
-        <div className="w-80 bg-secondary border-l border-slate-700 flex flex-col">
-          <div className="p-6 border-b border-slate-700">
-            <h2 className="text-lg font-semibold mb-4">AI Voice & Audio</h2>
-            
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="voice">AI Voice</TabsTrigger>
-                <TabsTrigger value="audio">Audio</TabsTrigger>
+            {/* Bottom Tabs */}
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 bg-gray-800">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="voices">Premium TTS</TabsTrigger>
+                <TabsTrigger value="video">Video Tools</TabsTrigger>
+                <TabsTrigger value="setup">Setup Guide</TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="voice" className="space-y-4 mt-4">
-                {/* Language Selection */}
-                <div>
-                  <Label className="text-sm font-medium text-slate-300 mb-2">Language</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      variant={voiceProvider === "english" ? "default" : "outline"}
-                      className="bg-primary border-slate-600 hover:border-accent"
-                      onClick={() => setVoiceProvider("english")}
-                    >
-                      🇺🇸 English
-                    </Button>
-                    <Button
-                      variant={voiceProvider === "hindi" ? "default" : "outline"}
-                      className="bg-primary border-slate-600 hover:border-accent"
-                      onClick={() => setVoiceProvider("hindi")}
-                    >
-                      🇮🇳 Hindi
-                    </Button>
+              <TabsContent value="overview" className="mt-4">
+                <Card className="bg-gray-800 border-gray-700 p-6">
+                  <h3 className="text-lg font-semibold mb-4">What You Get</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="text-green-400" size={16} />
+                      <span className="text-sm">High-quality English and Hindi voice synthesis</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="text-green-400" size={16} />
+                      <span className="text-sm">Professional-grade video generation up to 4K</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="text-green-400" size={16} />
+                      <span className="text-sm">Cinema-quality color grading and effects</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="text-green-400" size={16} />
+                      <span className="text-sm">No subscriptions, API keys, or hidden costs</span>
+                    </div>
                   </div>
-                </div>
-
-                {/* Premium Voice Selection */}
-                <div>
-                  <Label className="text-sm font-medium text-slate-300 mb-2">
-                    Premium {voiceProvider === "english" ? "English" : "Hindi"} Voices
-                    <span className="text-xs text-green-400 ml-2">100% FREE</span>
-                  </Label>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {voices
-                      ?.filter((voice: any) => voice.language === (voiceProvider === "english" ? "en" : "hi"))
-                      ?.sort((a: any, b: any) => {
-                        // Sort premium voices first
-                        if (a.quality === "premium" && b.quality !== "premium") return -1;
-                        if (b.quality === "premium" && a.quality !== "premium") return 1;
-                        return 0;
-                      })
-                      ?.map((voice: any) => (
-                      <div
-                        key={voice.id}
-                        className={`bg-primary border rounded-lg p-3 cursor-pointer transition-colors ${
-                          selectedVoice === voice.id ? "border-accent bg-accent/10" : "border-slate-600 hover:border-accent"
-                        }`}
-                        onClick={() => setSelectedVoice(voice.id)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <div className="text-sm font-medium">{voice.name}</div>
-                              {voice.quality === "premium" && (
-                                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
-                                  PREMIUM
-                                </div>
-                              )}
-                            </div>
-                            <div className="text-xs text-slate-400 mt-1">
-                              {voice.gender === "female" ? "👩" : "👨"} {voice.description}
-                            </div>
-                            <div className="text-xs text-green-400 mt-1">
-                              {voice.provider === "coqui" && "🎙️ Coqui TTS"}
-                              {voice.provider === "bark" && "🗣️ Bark AI"}
-                              {voice.provider === "indic-tts" && "🇮🇳 Indic TTS"}
-                              {voice.provider === "espeak" && "📢 eSpeak"}
-                            </div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              previewVoiceMutation.mutate({ voiceId: voice.id, provider: voice.provider });
-                            }}
-                            disabled={previewVoiceMutation.isPending}
-                            className="hover:bg-accent/20"
-                          >
-                            <Play size={14} />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Voice Script */}
-                <div>
-                  <Label className="text-sm font-medium text-slate-300 mb-2">Voice Script</Label>
-                  <Textarea
-                    className="w-full h-20 bg-primary border-slate-600 focus:border-accent resize-none"
-                    placeholder="Enter the text for AI voice narration..."
-                    value={voiceScript}
-                    onChange={(e) => setVoiceScript(e.target.value)}
-                  />
-                </div>
-
-                {/* Voice Settings */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-xs text-slate-400 mb-1">Speed</Label>
-                    <Slider
-                      value={voiceSpeed}
-                      onValueChange={setVoiceSpeed}
-                      min={0.5}
-                      max={2}
-                      step={0.1}
-                      className="w-full"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-slate-400 mb-1">Pitch</Label>
-                    <Slider
-                      value={voicePitch}
-                      onValueChange={setVoicePitch}
-                      min={-20}
-                      max={20}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="audio" className="space-y-4 mt-4">
-                {/* Background Music */}
-                <div>
-                  <h4 className="text-sm font-medium text-slate-300 mb-3">Background Music</h4>
-                  <div className="space-y-2">
-                    {backgroundMusic?.map((track: any) => (
-                      <div
-                        key={track.id}
-                        className={`bg-primary border rounded-lg p-3 cursor-pointer transition-colors ${
-                          selectedBGM === track.id ? "border-accent" : "border-slate-600 hover:border-accent"
-                        }`}
-                        onClick={() => setSelectedBGM(track.id)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-sm font-medium">{track.name}</div>
-                            <div className="text-xs text-slate-400">
-                              {track.description} • {formatTime(track.duration)}
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">
-                            <Play size={14} />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-3">
-                    <Label className="text-xs text-slate-400 mb-1">BGM Volume</Label>
-                    <Slider
-                      value={bgmVolume}
-                      onValueChange={setBgmVolume}
-                      max={100}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
+                </Card>
               </TabsContent>
             </Tabs>
           </div>
 
-          {/* AI Avatar Section */}
-          <div className="p-6 border-b border-slate-700">
-            <h3 className="text-md font-semibold mb-4">AI Avatar</h3>
-            
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {avatars?.map((avatar: Avatar) => (
-                <div
-                  key={avatar.id}
-                  className={`bg-primary border rounded-lg p-2 cursor-pointer transition-colors ${
-                    selectedAvatar === avatar.id ? "border-accent" : "border-slate-600 hover:border-accent"
-                  }`}
-                  onClick={() => setSelectedAvatar(avatar.id)}
-                >
-                  <img 
-                    src={avatar.imageUrl} 
-                    alt={avatar.name}
-                    className="w-full h-16 object-cover rounded-md mb-2"
-                  />
-                  <div className="text-xs font-medium">{avatar.name}</div>
-                  <div className="text-xs text-slate-400">{avatar.style}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-300">Lip Sync Quality</span>
-                <Select value={lipSyncQuality} onValueChange={setLipSyncQuality}>
-                  <SelectTrigger className="w-20 bg-primary border-slate-600 focus:border-accent">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="fast">Fast</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-300">Eye Contact</span>
-                <Switch checked={eyeContact} onCheckedChange={setEyeContact} />
-              </div>
-            </div>
-          </div>
-
-          {/* Sound Effects */}
-          <div className="flex-1 p-6 overflow-y-auto">
-            <h3 className="text-md font-semibold mb-4">Sound & Music</h3>
-            
-            <div>
-              <h4 className="text-sm font-medium text-slate-300 mb-3">Sound Effects</h4>
-              <div className="grid grid-cols-2 gap-2">
-                {soundEffects?.map((effect: any) => (
-                  <Button
-                    key={effect.id}
-                    variant="outline"
-                    className="bg-primary border-slate-600 hover:border-accent text-left p-2 h-auto"
-                  >
+          {/* Right Sidebar - AI Voice & Audio */}
+          <div className="col-span-3">
+            <Card className="bg-gray-800 border-gray-700">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold mb-6">AI Voice & Audio</h2>
+                
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                  <TabsList className="grid w-full grid-cols-2 bg-gray-900">
+                    <TabsTrigger value="voice">AI Voice</TabsTrigger>
+                    <TabsTrigger value="audio">Audio</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="voice" className="space-y-4 mt-4">
+                    {/* Language Selection */}
                     <div>
-                      <div className="text-xs font-medium">{effect.name}</div>
-                      <div className="text-xs text-slate-400">{formatTime(effect.duration)}</div>
+                      <Label className="text-sm font-medium text-gray-300 mb-2 block">Language</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant={voiceProvider === "english" ? "default" : "outline"}
+                          className={voiceProvider === "english" ? "bg-purple-600 hover:bg-purple-700" : "bg-gray-900 border-gray-600 hover:border-purple-500"}
+                          onClick={() => setVoiceProvider("english")}
+                        >
+                          🇺🇸 English
+                        </Button>
+                        <Button
+                          variant={voiceProvider === "hindi" ? "default" : "outline"}
+                          className={voiceProvider === "hindi" ? "bg-purple-600 hover:bg-purple-700" : "bg-gray-900 border-gray-600 hover:border-purple-500"}
+                          onClick={() => setVoiceProvider("hindi")}
+                        >
+                          🇮🇳 Hindi
+                        </Button>
+                      </div>
                     </div>
-                  </Button>
-                ))}
+
+                    {/* Voice Selection */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-300 mb-2 block">
+                        Premium {voiceProvider === "english" ? "English" : "Hindi"} Voices
+                        <span className="text-xs text-green-400 ml-2">100% FREE</span>
+                      </Label>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {voices
+                          ?.filter((voice: any) => voice.language === (voiceProvider === "english" ? "en" : "hi"))
+                          ?.sort((a: any, b: any) => {
+                            if (a.quality === "premium" && b.quality !== "premium") return -1;
+                            if (b.quality === "premium" && a.quality !== "premium") return 1;
+                            return 0;
+                          })
+                          ?.map((voice: any) => (
+                          <div
+                            key={voice.id}
+                            className={`bg-gray-900 border rounded-lg p-3 cursor-pointer transition-colors ${
+                              selectedVoice === voice.id ? "border-purple-500 bg-purple-500/10" : "border-gray-600 hover:border-purple-500"
+                            }`}
+                            onClick={() => setSelectedVoice(voice.id)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <div className="text-sm font-medium">{voice.name}</div>
+                                  {voice.quality === "premium" && (
+                                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                      PREMIUM
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-xs text-gray-400 mt-1">
+                                  {voice.gender === "female" ? "👩" : "👨"} {voice.description}
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  previewVoiceMutation.mutate({ voiceId: voice.id, provider: voice.provider });
+                                }}
+                                disabled={previewVoiceMutation.isPending}
+                                className="hover:bg-purple-500/20"
+                              >
+                                <Play size={14} />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Voice Script */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-300 mb-2 block">Voice Script</Label>
+                      <Textarea
+                        className="w-full h-20 bg-gray-900 border-gray-600 focus:border-purple-500 resize-none"
+                        placeholder="Enter the text for AI voice narration..."
+                        value={voiceScript}
+                        onChange={(e) => setVoiceScript(e.target.value)}
+                      />
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="audio" className="space-y-4 mt-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-300 mb-3">Background Music</h4>
+                      <div className="space-y-2">
+                        {backgroundMusic?.map((track: any) => (
+                          <div
+                            key={track.id}
+                            className={`bg-gray-900 border rounded-lg p-3 cursor-pointer transition-colors ${
+                              selectedBGM === track.id ? "border-purple-500" : "border-gray-600 hover:border-purple-500"
+                            }`}
+                            onClick={() => setSelectedBGM(track.id)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="text-sm font-medium">{track.name}</div>
+                                <div className="text-xs text-gray-400">
+                                  {track.description} • {formatTime(track.duration)}
+                                </div>
+                              </div>
+                              <Button variant="ghost" size="sm">
+                                <Play size={14} />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </div>
-              
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-sm text-slate-300">Auto-match Effects</span>
-                <Switch checked={autoMatchEffects} onCheckedChange={setAutoMatchEffects} />
-              </div>
-            </div>
+            </Card>
           </div>
         </div>
       </div>
