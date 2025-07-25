@@ -34,6 +34,50 @@ export class FreeTTSService {
     return this.voices;
   }
 
+  async previewVoice(voiceId: string, text: string = "Hello, this is a voice preview."): Promise<Buffer> {
+    try {
+      const voice = this.voices.find(v => v.id === voiceId);
+      if (!voice) {
+        throw new Error("Voice not found");
+      }
+
+      // Generate a short preview using the voice
+      const options = {
+        voice: voiceId,
+        speed: 1.0,
+        pitch: 0,
+        volume: 100
+      };
+
+      return await this.generateSpeech(text, options);
+    } catch (error) {
+      console.error("Voice preview failed:", error);
+      // Return a simple beep as fallback
+      return await this.generateFallbackAudio(text);
+    }
+  }
+
+  private async generateFallbackAudio(text: string): Promise<Buffer> {
+    // Generate a simple audio buffer with basic TTS
+    try {
+      return await this.tryEngine("espeak", text, { voice: "espeak-female-en", speed: 1.0, pitch: 0, volume: 100 }, this.voices[0]);
+    } catch (error) {
+      // Generate a silent audio buffer as final fallback
+      const duration = Math.max(text.length * 0.1, 2); // Estimate duration
+      const sampleRate = 22050;
+      const samples = Math.floor(duration * sampleRate);
+      const buffer = Buffer.alloc(samples * 2); // 16-bit audio
+      
+      // Add a simple tone pattern
+      for (let i = 0; i < samples; i++) {
+        const sample = Math.sin(2 * Math.PI * 440 * i / sampleRate) * 16384; // 440Hz tone
+        buffer.writeInt16LE(sample, i * 2);
+      }
+      
+      return buffer;
+    }
+  }
+
   async generateSpeech(text: string, options: FreeTTSOptions): Promise<Buffer> {
     try {
       const voice = this.voices.find(v => v.id === options.voice);
@@ -76,6 +120,25 @@ export class FreeTTSService {
     } catch (error) {
       throw new Error(`Free TTS generation failed: ${error}`);
     }
+  }
+
+  private async runCommand(command: string, args: string[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const { spawn } = require("child_process");
+      const process = spawn(command, args);
+      
+      process.on("close", (code: number) => {
+        if (code === 0) {
+          resolve();
+        } else {
+          reject(new Error(`Command failed with code ${code}`));
+        }
+      });
+      
+      process.on("error", (error: Error) => {
+        reject(error);
+      });
+    });
   }
 
   private async generateCoquiTTS(text: string, voice: any, options: FreeTTSOptions): Promise<Buffer | null> {

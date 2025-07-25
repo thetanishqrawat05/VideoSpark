@@ -347,37 +347,37 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
+      <header className="bg-slate-900 border-b border-slate-800 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
                 <Video className="text-white" size={20} />
               </div>
-              <h1 className="text-2xl font-bold">VeoGen Pro</h1>
+              <h1 className="text-2xl font-bold text-slate-100">VeoGen Pro</h1>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <span className="text-gray-400 hover:text-white cursor-pointer">Dashboard</span>
-              <span className="text-white border-b-2 border-purple-500 pb-1">Generator</span>
-              <Link to="/analyzer" className="text-gray-400 hover:text-white transition-colors">
+              <span className="text-slate-400 hover:text-slate-100 cursor-pointer transition-colors">Dashboard</span>
+              <span className="text-slate-100 border-b-2 border-purple-500 pb-1">Generator</span>
+              <Link to="/analyzer" className="text-slate-400 hover:text-slate-100 transition-colors">
                 Video Analyzer
               </Link>
-              <span className="text-gray-400 hover:text-white cursor-pointer">Gallery</span>
-              <span className="text-gray-400 hover:text-white cursor-pointer">Settings</span>
+              <span className="text-slate-400 hover:text-slate-100 cursor-pointer transition-colors">Gallery</span>
+              <span className="text-slate-400 hover:text-slate-100 cursor-pointer transition-colors">Settings</span>
             </nav>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-300">
-              Credits: <span className="text-green-400">1,250</span>
+            <div className="text-sm text-slate-300">
+              Credits: <span className="text-green-400 font-medium">1,250</span>
             </div>
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+            <Button className="bg-purple-600 hover:bg-purple-700 text-white border-0">
               <Crown size={16} className="mr-2" />
               Upgrade
             </Button>
-            <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-              <User size={16} />
+            <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center">
+              <User size={16} className="text-slate-300" />
             </div>
           </div>
         </div>
@@ -392,15 +392,15 @@ export default function Home() {
         <div className="grid grid-cols-12 gap-6 mt-6">
           {/* Left Sidebar - Text to Video */}
           <div className="col-span-3">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-slate-900 border-slate-700">
               <div className="p-6">
-                <h2 className="text-xl font-semibold mb-6">Text to Video</h2>
+                <h2 className="text-xl font-semibold mb-6 text-slate-100">Text to Video</h2>
                 
                 {/* Prompt Input */}
                 <div className="mb-6">
-                  <Label className="text-sm font-medium text-gray-300 mb-2 block">Video Prompt</Label>
+                  <Label className="text-sm font-medium text-slate-300 mb-2 block">Video Prompt</Label>
                   <Textarea
-                    className="w-full h-32 bg-gray-900 border-gray-600 focus:border-purple-500 resize-none text-white placeholder-gray-400"
+                    className="w-full h-32 bg-slate-800 border-slate-600 focus:border-purple-500 resize-none text-slate-100 placeholder-slate-500"
                     placeholder="Describe your video: A golden retriever playing in a field of sunflowers at sunset, with gentle wind blowing through the flowers..."
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
@@ -408,7 +408,7 @@ export default function Home() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="mt-2 text-purple-400 hover:text-purple-300"
+                    className="mt-2 text-purple-400 hover:text-purple-300 hover:bg-purple-900/20"
                     onClick={() => enhancePromptMutation.mutate(prompt)}
                     disabled={!prompt.trim() || enhancePromptMutation.isPending}
                   >
@@ -420,29 +420,29 @@ export default function Home() {
                 {/* Style and Duration */}
                 <div className="grid grid-cols-1 gap-4 mb-6">
                   <div>
-                    <Label className="text-sm font-medium text-gray-300 mb-2 block">Style</Label>
+                    <Label className="text-sm font-medium text-slate-300 mb-2 block">Style</Label>
                     <Select value={style} onValueChange={setStyle}>
-                      <SelectTrigger className="bg-gray-900 border-gray-600 focus:border-purple-500">
+                      <SelectTrigger className="bg-slate-800 border-slate-600 focus:border-purple-500 text-slate-100">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="cinematic">Cinematic</SelectItem>
-                        <SelectItem value="realistic">Realistic</SelectItem>
-                        <SelectItem value="animated">Animated</SelectItem>
-                        <SelectItem value="documentary">Documentary</SelectItem>
+                      <SelectContent className="bg-slate-800 border-slate-600">
+                        <SelectItem value="cinematic" className="text-slate-100 focus:bg-slate-700">Cinematic</SelectItem>
+                        <SelectItem value="realistic" className="text-slate-100 focus:bg-slate-700">Realistic</SelectItem>
+                        <SelectItem value="animated" className="text-slate-100 focus:bg-slate-700">Animated</SelectItem>
+                        <SelectItem value="documentary" className="text-slate-100 focus:bg-slate-700">Documentary</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-300 mb-2 block">Duration</Label>
+                    <Label className="text-sm font-medium text-slate-300 mb-2 block">Duration</Label>
                     <Select value={duration} onValueChange={setDuration}>
-                      <SelectTrigger className="bg-gray-900 border-gray-600 focus:border-purple-500">
+                      <SelectTrigger className="bg-slate-800 border-slate-600 focus:border-purple-500 text-slate-100">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="4">4 seconds</SelectItem>
-                        <SelectItem value="8">8 seconds</SelectItem>
-                        <SelectItem value="16">16 seconds</SelectItem>
+                      <SelectContent className="bg-slate-800 border-slate-600">
+                        <SelectItem value="4" className="text-slate-100 focus:bg-slate-700">4 seconds</SelectItem>
+                        <SelectItem value="8" className="text-slate-100 focus:bg-slate-700">8 seconds</SelectItem>
+                        <SelectItem value="16" className="text-slate-100 focus:bg-slate-700">16 seconds</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -451,29 +451,29 @@ export default function Home() {
                 {/* Resolution and Aspect Ratio */}
                 <div className="grid grid-cols-2 gap-3 mb-6">
                   <div>
-                    <Label className="text-sm font-medium text-gray-300 mb-2 block">Resolution</Label>
+                    <Label className="text-sm font-medium text-slate-300 mb-2 block">Resolution</Label>
                     <Select value={resolution} onValueChange={setResolution}>
-                      <SelectTrigger className="bg-gray-900 border-gray-600 focus:border-purple-500">
+                      <SelectTrigger className="bg-slate-800 border-slate-600 focus:border-purple-500 text-slate-100">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="720p">720p HD</SelectItem>
-                        <SelectItem value="1080p">1080p FHD</SelectItem>
-                        <SelectItem value="4k">4K UHD</SelectItem>
+                      <SelectContent className="bg-slate-800 border-slate-600">
+                        <SelectItem value="720p" className="text-slate-100 focus:bg-slate-700">720p HD</SelectItem>
+                        <SelectItem value="1080p" className="text-slate-100 focus:bg-slate-700">1080p FHD</SelectItem>
+                        <SelectItem value="4k" className="text-slate-100 focus:bg-slate-700">4K UHD</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-300 mb-2 block">Aspect</Label>
+                    <Label className="text-sm font-medium text-slate-300 mb-2 block">Aspect</Label>
                     <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                      <SelectTrigger className="bg-gray-900 border-gray-600 focus:border-purple-500">
+                      <SelectTrigger className="bg-slate-800 border-slate-600 focus:border-purple-500 text-slate-100">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="16:9">16:9</SelectItem>
-                        <SelectItem value="9:16">9:16</SelectItem>
-                        <SelectItem value="1:1">1:1</SelectItem>
-                        <SelectItem value="4:3">4:3</SelectItem>
+                      <SelectContent className="bg-slate-800 border-slate-600">
+                        <SelectItem value="16:9" className="text-slate-100 focus:bg-slate-700">16:9</SelectItem>
+                        <SelectItem value="9:16" className="text-slate-100 focus:bg-slate-700">9:16</SelectItem>
+                        <SelectItem value="1:1" className="text-slate-100 focus:bg-slate-700">1:1</SelectItem>
+                        <SelectItem value="4:3" className="text-slate-100 focus:bg-slate-700">4:3</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -513,9 +513,9 @@ export default function Home() {
             </div>
 
             {/* Video Preview Container */}
-            <Card className="bg-gray-800 border-gray-700 mb-6">
+            <Card className="bg-slate-900 border-slate-700 mb-6">
               <div className="p-6">
-                <div className="relative bg-black rounded-xl overflow-hidden aspect-video border border-gray-600">
+                <div className="relative bg-slate-950 rounded-xl overflow-hidden aspect-video border border-slate-600">
                   {jobStatus?.result?.videoUrl ? (
                     <video
                       className="w-full h-full"
@@ -527,13 +527,13 @@ export default function Home() {
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
-                        <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center mb-4 mx-auto">
-                          <Play className="text-gray-400" size={32} />
+                        <div className="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mb-4 mx-auto">
+                          <Play className="text-slate-400" size={32} />
                         </div>
-                        <h3 className="text-xl font-medium text-gray-300 mb-2">
+                        <h3 className="text-xl font-medium text-slate-300 mb-2">
                           {currentJob ? "Generating Video..." : "Ready to Generate"}
                         </h3>
-                        <p className="text-gray-500 text-sm max-w-md">
+                        <p className="text-slate-500 text-sm max-w-md">
                           {currentJob 
                             ? jobStatus?.currentStep || "Processing your request..." 
                             : "Enter your prompt and click Generate Video to create your AI-powered video"
@@ -548,10 +548,10 @@ export default function Home() {
                 {currentJob && jobStatus && (
                   <div className="mt-6">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">
+                      <span className="text-sm font-medium text-slate-200">
                         {jobStatus.currentStep || "Processing..."}
                       </span>
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-slate-400">
                         {jobStatus.estimatedTimeRemaining ? 
                           `${formatTime(jobStatus.estimatedTimeRemaining)} remaining` : 
                           "Calculating time..."
@@ -562,7 +562,7 @@ export default function Home() {
                       value={jobStatus.progress || 0} 
                       className="h-2 mb-2" 
                     />
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-slate-400">
                       {jobStatus.currentStep || "Processing your video generation request..."}
                     </div>
                   </div>
@@ -572,55 +572,55 @@ export default function Home() {
 
             {/* Action Cards */}
             <div className="grid grid-cols-4 gap-4 mb-6">
-              <Card className="bg-gray-800 border-gray-700 p-4 text-center hover:bg-gray-750 transition-colors cursor-pointer">
+              <Card className="bg-slate-900 border-slate-700 p-4 text-center hover:bg-slate-800 transition-colors cursor-pointer">
                 <WandSparkles className="mx-auto text-blue-400 mb-2" size={24} />
-                <div className="text-sm font-medium">Enhance with AI</div>
-                <div className="text-xs text-gray-400">English & Hindi</div>
+                <div className="text-sm font-medium text-slate-200">Enhance with AI</div>
+                <div className="text-xs text-slate-400">English & Hindi</div>
               </Card>
-              <Card className="bg-gray-800 border-gray-700 p-4 text-center hover:bg-gray-750 transition-colors cursor-pointer">
+              <Card className="bg-slate-900 border-slate-700 p-4 text-center hover:bg-slate-800 transition-colors cursor-pointer">
                 <Video className="mx-auto text-green-400 mb-2" size={24} />
-                <div className="text-sm font-medium">Ultra HD Quality</div>
-                <div className="text-xs text-gray-400">Ultra HD Quality</div>
+                <div className="text-sm font-medium text-slate-200">Ultra HD Quality</div>
+                <div className="text-xs text-slate-400">Up to 4K</div>
               </Card>
-              <Card className="bg-gray-800 border-gray-700 p-4 text-center hover:bg-gray-750 transition-colors cursor-pointer">
+              <Card className="bg-slate-900 border-slate-700 p-4 text-center hover:bg-slate-800 transition-colors cursor-pointer">
                 <Palette className="mx-auto text-purple-400 mb-2" size={24} />
-                <div className="text-sm font-medium">Professional Look</div>
-                <div className="text-xs text-gray-400">Professional Look</div>
+                <div className="text-sm font-medium text-slate-200">Professional Look</div>
+                <div className="text-xs text-slate-400">Cinema Grade</div>
               </Card>
-              <Card className="bg-gray-800 border-gray-700 p-4 text-center hover:bg-gray-750 transition-colors cursor-pointer">
+              <Card className="bg-slate-900 border-slate-700 p-4 text-center hover:bg-slate-800 transition-colors cursor-pointer">
                 <Zap className="mx-auto text-yellow-400 mb-2" size={24} />
-                <div className="text-sm font-medium">Completely Free</div>
-                <div className="text-xs text-gray-400">Completely Free</div>
+                <div className="text-sm font-medium text-slate-200">Completely Free</div>
+                <div className="text-xs text-slate-400">No API Keys</div>
               </Card>
             </div>
 
             {/* Bottom Tabs */}
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 bg-gray-800">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="voices">Premium TTS</TabsTrigger>
-                <TabsTrigger value="video">Video Tools</TabsTrigger>
-                <TabsTrigger value="setup">Setup Guide</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
+                <TabsTrigger value="overview" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-slate-100">Overview</TabsTrigger>
+                <TabsTrigger value="voices" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-slate-100">Premium TTS</TabsTrigger>
+                <TabsTrigger value="video" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-slate-100">Video Tools</TabsTrigger>
+                <TabsTrigger value="setup" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-slate-100">Setup Guide</TabsTrigger>
               </TabsList>
               <TabsContent value="overview" className="mt-4">
-                <Card className="bg-gray-800 border-gray-700 p-6">
-                  <h3 className="text-lg font-semibold mb-4">What You Get</h3>
+                <Card className="bg-slate-900 border-slate-700 p-6">
+                  <h3 className="text-lg font-semibold mb-4 text-slate-100">What You Get</h3>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <CheckCircle className="text-green-400" size={16} />
-                      <span className="text-sm">High-quality English and Hindi voice synthesis</span>
+                      <span className="text-sm text-slate-300">High-quality English and Hindi voice synthesis</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle className="text-green-400" size={16} />
-                      <span className="text-sm">Professional-grade video generation up to 4K</span>
+                      <span className="text-sm text-slate-300">Professional-grade video generation up to 4K</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle className="text-green-400" size={16} />
-                      <span className="text-sm">Cinema-quality color grading and effects</span>
+                      <span className="text-sm text-slate-300">Cinema-quality color grading and effects</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle className="text-green-400" size={16} />
-                      <span className="text-sm">No subscriptions, API keys, or hidden costs</span>
+                      <span className="text-sm text-slate-300">No subscriptions, API keys, or hidden costs</span>
                     </div>
                   </div>
                 </Card>
@@ -630,14 +630,14 @@ export default function Home() {
 
           {/* Right Sidebar - AI Voice & Audio */}
           <div className="col-span-3">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-slate-900 border-slate-700">
               <div className="p-6">
-                <h2 className="text-xl font-semibold mb-6">AI Voice & Audio</h2>
+                <h2 className="text-xl font-semibold mb-6 text-slate-100">AI Voice & Audio</h2>
                 
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-2 bg-gray-900">
-                    <TabsTrigger value="voice">AI Voice</TabsTrigger>
-                    <TabsTrigger value="audio">Audio</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-2 bg-slate-800 border-slate-700">
+                    <TabsTrigger value="voice" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-slate-100">AI Voice</TabsTrigger>
+                    <TabsTrigger value="audio" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-slate-100">Audio</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="voice" className="space-y-4 mt-4">
