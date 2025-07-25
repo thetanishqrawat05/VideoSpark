@@ -7,6 +7,8 @@ This is a comprehensive AI-powered text-to-video generation platform designed to
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Cost preference: Completely free system without any API keys or paid services.
+Quality goal: Achieve Google Veo 3 level quality using only open-source alternatives.
 
 ## System Architecture
 
@@ -47,12 +49,14 @@ Preferred communication style: Simple, everyday language.
 3. **Free Alternative Selection**: Optimal pipeline recommendation using completely free tools
 4. **Professional Implementation**: Step-by-step guide for achieving premium quality without paid services
 
-### Free Technology Stack
-- **Stable Video Diffusion**: Open-source text-to-video model for high-quality generation
-- **Coqui TTS & Bark**: Professional voice synthesis (completely free)
-- **Wav2Lip & SadTalker**: Accurate lip-syncing and avatar generation
+### Free Technology Stack (Zero Cost Implementation)
+- **eSpeak/Festival/Pico TTS**: Free text-to-speech engines (working locally)
+- **Rule-based AI Enhancement**: Smart prompt improvement without OpenAI API
+- **FFmpeg**: Professional audio/video processing (completely free)
+- **Stable Video Diffusion**: Open-source text-to-video generation
+- **Coqui TTS & Bark**: Professional voice synthesis alternatives
+- **Wav2Lip & SadTalker**: Free lip-syncing and avatar generation
 - **Real-ESRGAN**: AI video upscaling and enhancement
-- **FFmpeg**: Professional audio/video processing and color grading
 - **OpenColorIO**: Industry-standard color management
 
 ### Video Analysis System

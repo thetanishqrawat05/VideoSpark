@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import { FreeNotice } from "@/components/free-notice";
 import { 
   Play, 
   Pause, 
@@ -378,6 +379,10 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
+        {/* Free Notice */}
+        <div className="absolute top-20 left-6 right-6 z-10">
+          <FreeNotice />
+        </div>
         {/* Left Sidebar - Generation Controls */}
         <div className="w-80 bg-secondary border-r border-slate-700 flex flex-col">
           <div className="p-6 border-b border-slate-700">

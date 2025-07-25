@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { FreeNotice } from "@/components/free-notice";
 import { 
   Upload, 
   Video, 
@@ -187,6 +188,9 @@ export default function VideoAnalyzer() {
   return (
     <div className="min-h-screen bg-primary text-slate-50 p-6">
       <div className="max-w-7xl mx-auto">
+        {/* Free Notice */}
+        <FreeNotice />
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-4">

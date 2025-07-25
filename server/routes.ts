@@ -9,6 +9,8 @@ import { videoGeneratorService } from "./services/video-generator";
 import { avatarService } from "./services/avatar";
 import { videoAnalyzerService } from "./services/video-analyzer";
 import { freeVideoGeneratorService } from "./services/free-video-generator";
+import { freeTTSService } from "./services/free-tts";
+import { freePromptEnhancerService } from "./services/free-prompt-enhancer";
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
@@ -126,65 +128,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get available voices
+  // Get available voices (free TTS)
   app.get("/api/voices", async (req, res) => {
     try {
-      const provider = req.query.provider as string;
-      let voices = [];
-
-      if (provider === "elevenlabs") {
-        try {
-          const elevenLabsVoices = await elevenLabsService.getVoices();
-          voices = elevenLabsVoices.map(voice => ({
-            id: voice.voice_id,
-            name: voice.name,
-            description: voice.description || "",
-            provider: "elevenlabs",
-            gender: voice.labels?.gender || "unknown",
-            style: voice.category || "general",
-            language: "en",
-          }));
-        } catch (error) {
-          // Fallback to sample voices if ElevenLabs API is not available
-          voices = [
-            { id: "sarah-pro", name: "Sarah Professional", description: "Female professional voice", provider: "elevenlabs", gender: "female", style: "professional", language: "en" },
-            { id: "marcus-narrator", name: "Marcus Narrator", description: "Male documentary voice", provider: "elevenlabs", gender: "male", style: "documentary", language: "en" },
-            { id: "emma-casual", name: "Emma Casual", description: "Female friendly voice", provider: "elevenlabs", gender: "female", style: "friendly", language: "en" },
-          ];
-        }
-      } else {
-        // OpenAI and other providers - return predefined voices
-        voices = [
-          { id: "alloy", name: "Alloy", description: "Balanced and neutral", provider: "openai", gender: "neutral", style: "professional", language: "en" },
-          { id: "echo", name: "Echo", description: "Clear and articulate", provider: "openai", gender: "male", style: "professional", language: "en" },
-          { id: "fable", name: "Fable", description: "Warm and engaging", provider: "openai", gender: "male", style: "friendly", language: "en" },
-          { id: "onyx", name: "Onyx", description: "Deep and authoritative", provider: "openai", gender: "male", style: "authoritative", language: "en" },
-          { id: "nova", name: "Nova", description: "Bright and energetic", provider: "openai", gender: "female", style: "energetic", language: "en" },
-          { id: "shimmer", name: "Shimmer", description: "Gentle and soothing", provider: "openai", gender: "female", style: "gentle", language: "en" },
-        ];
-      }
-
+      const voices = await freeTTSService.getVoices();
       res.json(voices);
     } catch (error) {
       res.status(500).json({ message: error instanceof Error ? error.message : "Internal server error" });
     }
   });
 
-  // Preview voice
+  // Preview voice (free TTS)
   app.post("/api/preview-voice", async (req, res) => {
     try {
-      const { voiceId, provider, text = "Hello, this is a voice preview." } = req.body;
-
-      let audioBuffer: Buffer;
-
-      if (provider === "elevenlabs") {
-        audioBuffer = await elevenLabsService.generateSpeech(text, voiceId);
-      } else {
-        audioBuffer = await openaiService.generateTextToSpeech(text, voiceId);
-      }
+      const { voiceId, text = "Hello, this is a voice preview." } = req.body;
+      const audioBuffer = await freeTTSService.previewVoice(voiceId, text);
 
       res.set({
-        "Content-Type": "audio/mpeg",
+        "Content-Type": "audio/wav",
         "Content-Length": audioBuffer.length.toString(),
       });
       res.send(audioBuffer);
@@ -239,18 +200,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Enhance prompt using AI
+  // Enhance prompt using free AI (no API keys needed)
   app.post("/api/enhance-prompt", async (req, res) => {
     try {
       const { prompt, style = "cinematic", duration = 8, resolution = "720p", aspectRatio = "16:9" } = req.body;
       
-      const enhanced = await openaiService.enhanceVideoPrompt({
-        text: prompt,
+      const enhanced = await freePromptEnhancerService.enhancePrompt(
+        prompt,
         style,
         duration,
         resolution,
-        aspectRatio,
-      });
+        aspectRatio
+      );
 
       res.json(enhanced);
     } catch (error) {
@@ -258,11 +219,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Analyze content for recommendations
+  // Analyze content for recommendations (free)
   app.post("/api/analyze-content", async (req, res) => {
     try {
       const { prompt } = req.body;
-      const analysis = await openaiService.analyzeVideoContent(prompt);
+      const analysis = await freePromptEnhancerService.analyzeVideoContent(prompt);
       res.json(analysis);
     } catch (error) {
       res.status(500).json({ message: error instanceof Error ? error.message : "Internal server error" });
