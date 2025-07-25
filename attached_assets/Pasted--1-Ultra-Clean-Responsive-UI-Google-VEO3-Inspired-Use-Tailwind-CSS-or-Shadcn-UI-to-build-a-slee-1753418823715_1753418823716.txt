@@ -1,0 +1,91 @@
+🌟 1. Ultra-Clean Responsive UI (Google VEO3-Inspired)
+Use Tailwind CSS or Shadcn/UI to build a sleek, modern layout
+
+Include dark/light theme toggle
+
+Add animated components using Framer Motion
+
+Responsive for all screen sizes (desktop/tablet/mobile)
+
+Include homepage, dashboard, and settings screen
+
+🎬 2. Text-to-Video Generator (No Paid API)
+Integrate free open-source models like:
+
+ffmpeg.wasm for video processing
+
+pixabay or Pexels APIs for royalty-free visuals
+
+TypeIt.js or animation.js for dynamic text display
+
+When a user clicks “Generate”:
+
+Show a live rendering preview (with progress bar)
+
+Use slides or visuals + animated text as scenes
+
+Merge into a single downloadable video using ffmpeg
+
+🗣️ 3. Natural AI Voiceover (No Paid API)
+Integrate free AI voice tools, e.g.:
+
+Coqui TTS (for local generation)
+
+Google Text-to-Speech via client (demo voice)
+
+Add audio preview and playback controls (volume, speed)
+
+Ensure high audio quality (no robotic or noisy output)
+
+Fix broken audio issues — allow toggling voices per scene
+
+📦 4. Dynamic Video Builder (like VEO3)
+Scene-based editor:
+
+Users can split scripts into scenes
+
+Each scene allows editing: background, text, and voice
+
+Add drag-and-drop reorder feature
+
+Auto-sync text-to-visual/audio timing
+
+Final video shows synced animated text over clips or images
+
+📈 5. Advanced Features (for premium look)
+Add project saving and loading (using localStorage or Replit DB)
+
+Export generated video in .mp4 or .webm
+
+Support background music layer (select from 3 free tracks)
+
+Add “voice sync” toggle for AI narration
+
+Optional subtitle generator
+
+🧪 6. Fix All Bugs & Broken Features
+Ensure every button and toggle works
+
+Resolve "Generate" button showing empty output
+
+Make all dropdowns (audio, scenes) responsive
+
+Handle all media processing client-side to avoid CORS and paid APIs
+
+🔥 7. Add Premium-Like Bonus Features
+Templates: "Interview", "Story", "Marketing" – apply auto style
+
+Style Themes: Bold text, fade-in, typewriter, zoom
+
+Auto Captioning: Add dynamic subtitles synced with voiceover
+
+Download Options: Choose 480p / 720p / 1080p video resolution
+
+💡 Additional Recommendations
+Use react-player or video.js for smooth video preview
+
+Animate intro/outro with user’s brand/logo if uploaded
+
+Add visual feedback: loading spinners, success toasts, error alerts
+
+If you'd like, I can also generate the full React code scaffold with sample working components, working video preview, text-to-speech integration, and proper ffmpeg handling — or I can help you step-by-step fix your current Replit app if you upload the code/project.

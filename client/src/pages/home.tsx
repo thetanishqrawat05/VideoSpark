@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,10 +12,12 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
-import { FreeNotice } from "@/components/free-notice";
-import { PremiumGuide } from "@/components/premium-guide";
+import { TemplateSelector } from "@/components/template-selector";
+import { SceneEditor } from "@/components/scene-editor";
+import { VideoPreview } from "@/components/video-preview";
 import { 
   Play, 
   Pause, 
@@ -31,7 +34,20 @@ import {
   Settings,
   CheckCircle,
   Palette,
-  Zap
+  Zap,
+  Plus,
+  Sparkles,
+  FileText,
+  Mic,
+  Music,
+  Eye,
+  Save,
+  Upload,
+  Clock,
+  Target,
+  Layers,
+  Camera,
+  Wand2
 } from "lucide-react";
 
 interface VideoProject {

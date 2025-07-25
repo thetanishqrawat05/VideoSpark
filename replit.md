@@ -153,3 +153,18 @@ All features remain 100% free with no API keys or subscriptions required.
 - **Smart Text Overlays**: Automatic text animation and overlay generation based on prompts
 - **Thumbnail Generation**: Automatic thumbnail extraction from generated videos
 - **Real File Output**: Creates actual MP4 video files that can be downloaded and played
+
+### Google VEO3-Inspired Video Studio (July 25, 2025)
+- **Complete Text-to-Video Engine**: Slide-based video creation with scene parsing and intelligent layout
+- **Scene-Based Editor**: Add/remove/reorder scenes with visual timeline like Google Slides
+- **Professional Templates**: Interview, Story, Marketing, Educational, and Corporate templates with auto-styling
+- **Advanced TTS System**: Natural AI voiceover with Coqui TTS, Bark AI, and multilingual support
+- **Real-Time Preview**: Instant video preview with animated text overlays and synchronized audio
+- **Style Themes**: Bold text, fade-in, typewriter, zoom animations with cinema-grade effects
+- **Background Audio Layer**: Royalty-free music with auto-fade behind voice narration
+- **Smart Subtitles**: Auto-generated captions synchronized with voice timing
+- **Project Management**: Save/load projects locally with draft storage and version control
+- **Export Options**: Multiple resolution support (480p/720p/1080p/4K) with MP4/WebM formats
+- **Browser-Based Processing**: Client-side FFmpeg.wasm integration for zero server cost
+- **Natural Voice Sync**: Automatic timing synchronization between text and generated audio
+- **Professional UI**: Ultra-clean responsive design inspired by Google VEO3 interface
