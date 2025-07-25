@@ -1,5 +1,6 @@
 import { FreePromptEnhancerService } from "./free-prompt-enhancer";
 import { FreeTTSService } from "./free-tts";
+import { FreeVideoGeneratorService } from "./free-video-generator";
 import { VideoProject } from "@shared/schema";
 import { randomUUID } from "crypto";
 import fs from "fs/promises";
@@ -27,6 +28,7 @@ export class VideoGeneratorService {
   private jobResults = new Map<string, VideoGenerationResult>();
   private promptEnhancer = new FreePromptEnhancerService();
   private ttsService = new FreeTTSService();
+  private videoGenerator = new FreeVideoGeneratorService();
 
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -105,30 +107,42 @@ export class VideoGeneratorService {
         volume: 100
       };
 
-      job.currentStep = "Processing video generation pipeline";
+      job.currentStep = "Generating video content";
       job.progress = 50;
 
-      // Simulate video processing steps
-      await this.delay(2000);
-      job.currentStep = "Applying visual effects";
-      job.progress = 70;
+      // Generate actual video using FFmpeg and free tools
+      const videoPath = await this.videoGenerator.generateVideo({
+        prompt: enhancedPrompt,
+        style: project.style || "cinematic",
+        duration: project.duration || 8,
+        resolution: project.resolution || "720p",
+        aspectRatio: project.aspectRatio || "16:9"
+      });
 
-      await this.delay(2000);
+      job.currentStep = "Creating thumbnail";
+      job.progress = 80;
+
+      // Generate thumbnail from video
+      const thumbnailPath = await this.videoGenerator.generateThumbnail(videoPath);
+
       job.currentStep = "Finalizing video";
       job.progress = 90;
 
       await this.delay(1000);
       
-      // Mark as completed with mock result
+      // Mark as completed with real result
       job.status = "completed";
       job.progress = 100;
       job.currentStep = "Video generation complete";
 
-      // For now, we simulate success since this is a comprehensive free implementation
+      // Store real video result
+      const videoUrl = `/uploads/${path.basename(videoPath)}`;
+      const thumbnailUrl = `/uploads/${path.basename(thumbnailPath)}`;
+      
       this.jobResults.set(job.id, {
-        videoUrl: "/uploads/demo-video.mp4",
-        thumbnailUrl: "/uploads/demo-thumbnail.jpg",
-        duration: 8,
+        videoUrl,
+        thumbnailUrl,
+        duration: project.duration || 8,
         audioUrl: "/uploads/demo-audio.wav"
       });
 

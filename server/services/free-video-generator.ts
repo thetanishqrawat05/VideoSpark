@@ -1,458 +1,296 @@
-import { openaiService } from "./openai";
-import { videoAnalyzerService } from "./video-analyzer";
-import { VideoProject } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { spawn } from "child_process";
 import fs from "fs/promises";
 import path from "path";
-import { spawn } from "child_process";
+import { randomUUID } from "crypto";
 
-export interface FreeVideoGenerationOptions {
-  useOpenSourceModels: boolean;
-  enableAIUpscaling: boolean;
-  qualityPreset: "fast" | "balanced" | "high" | "ultra";
-  freeServicesOnly: boolean;
-}
-
-export interface VideoGenerationPipeline {
-  textToVideo: "stable-video-diffusion" | "animatediff" | "zeroscope";
-  voiceSynthesis: "coqui-tts" | "bark" | "tortoise-tts";
-  avatarGeneration: "wav2lip" | "sadtalker" | "faceswap";
-  audioProcessing: "ffmpeg" | "sox";
-  videoEnhancement: "real-esrgan" | "waifu2x" | "video-enhance";
-  colorGrading: "opencol-io" | "davinci-resolve-free";
+export interface VideoGenerationOptions {
+  prompt: string;
+  style: string;
+  duration: number;
+  resolution: string;
+  aspectRatio: string;
+  outputPath?: string;
 }
 
 export class FreeVideoGeneratorService {
-  private defaultPipeline: VideoGenerationPipeline = {
-    textToVideo: "stable-video-diffusion",
-    voiceSynthesis: "coqui-tts",
-    avatarGeneration: "wav2lip",
-    audioProcessing: "ffmpeg",
-    videoEnhancement: "real-esrgan",
-    colorGrading: "opencol-io",
-  };
+  private tempDir = path.join(process.cwd(), "temp");
+  private outputDir = path.join(process.cwd(), "uploads");
 
-  async analyzeReferenceVideos(videoPaths: string[]): Promise<{
-    commonSpecs: any;
-    qualityBenchmark: any;
-    recommendedPipeline: VideoGenerationPipeline;
-    freeAlternatives: string[];
-  }> {
-    const analyses = [];
+  constructor() {
+    this.ensureDirectories();
+  }
+
+  private async ensureDirectories(): Promise<void> {
+    await fs.mkdir(this.tempDir, { recursive: true });
+    await fs.mkdir(this.outputDir, { recursive: true });
+  }
+
+  async generateVideo(options: VideoGenerationOptions): Promise<string> {
+    const videoId = randomUUID();
+    const outputPath = options.outputPath || path.join(this.outputDir, `video_${videoId}.mp4`);
     
-    for (const videoPath of videoPaths) {
-      try {
-        const analysis = await videoAnalyzerService.analyzeVideo(videoPath);
-        analyses.push(analysis);
-      } catch (error) {
-        console.warn(`Could not analyze ${videoPath}:`, error);
-        // Continue with estimated high-quality specs
-      }
+    // Analyze prompt to determine video content and style
+    const scene = this.analyzePrompt(options.prompt);
+    
+    // Generate video based on scene analysis
+    if (scene.type === 'nature') {
+      await this.generateNatureVideo(options, outputPath, scene);
+    } else if (scene.type === 'abstract') {
+      await this.generateAbstractVideo(options, outputPath, scene);
+    } else if (scene.type === 'text') {
+      await this.generateTextVideo(options, outputPath, scene);
+    } else {
+      await this.generateGenericVideo(options, outputPath, scene);
     }
 
-    // If no analyses available, use professional video standards
-    const commonSpecs = analyses.length > 0 ? this.extractCommonSpecs(analyses) : {
-      resolution: { width: 1920, height: 1080 },
-      frameRate: 30,
-      bitrate: 8000000,
-      audioQuality: "high",
-      hasVoiceover: true,
-      hasBackgroundMusic: true,
-      visualEffects: ["color_grading", "motion_blur", "depth_of_field"],
-    };
+    return outputPath;
+  }
 
+  private analyzePrompt(prompt: string): any {
+    const lowerPrompt = prompt.toLowerCase();
+    
+    // Analyze prompt content
+    const isNature = /nature|tree|forest|ocean|mountain|sky|cloud|flower|bird|animal/.test(lowerPrompt);
+    const isAbstract = /abstract|geometric|pattern|shape|color|gradient|particle/.test(lowerPrompt);
+    const isText = /text|word|title|logo|sign/.test(lowerPrompt);
+    
+    // Extract colors
+    const colors = this.extractColors(lowerPrompt);
+    
+    // Extract motion keywords
+    const motion = this.extractMotion(lowerPrompt);
+    
     return {
-      commonSpecs,
-      qualityBenchmark: this.generateQualityBenchmark(commonSpecs),
-      recommendedPipeline: this.selectOptimalPipeline(commonSpecs),
-      freeAlternatives: this.getFreeAlternatives(),
+      type: isNature ? 'nature' : isAbstract ? 'abstract' : isText ? 'text' : 'generic',
+      colors,
+      motion,
+      keywords: prompt.split(' ').filter(word => word.length > 3),
+      originalPrompt: prompt
     };
   }
 
-  private extractCommonSpecs(analyses: any[]): any {
-    // Extract common specifications from analyzed videos
-    const avgResolution = {
-      width: Math.round(analyses.reduce((sum, a) => sum + a.resolution.width, 0) / analyses.length),
-      height: Math.round(analyses.reduce((sum, a) => sum + a.resolution.height, 0) / analyses.length),
+  private extractColors(prompt: string): string[] {
+    const colorMap = {
+      'red': '#FF0000', 'blue': '#0000FF', 'green': '#00FF00', 'yellow': '#FFFF00',
+      'purple': '#800080', 'orange': '#FFA500', 'pink': '#FFC0CB', 'black': '#000000',
+      'white': '#FFFFFF', 'gray': '#808080', 'brown': '#8B4513', 'gold': '#FFD700',
+      'silver': '#C0C0C0', 'cyan': '#00FFFF', 'magenta': '#FF00FF', 'lime': '#00FF00'
     };
-
-    return {
-      resolution: avgResolution,
-      frameRate: Math.round(analyses.reduce((sum, a) => sum + a.frameRate, 0) / analyses.length),
-      bitrate: Math.round(analyses.reduce((sum, a) => sum + a.bitrate, 0) / analyses.length),
-      audioQuality: analyses.every(a => a.audioFeatures.audioQuality === "high") ? "high" : "medium",
-      hasVoiceover: analyses.some(a => a.audioFeatures.hasVoiceover),
-      hasBackgroundMusic: analyses.some(a => a.audioFeatures.hasBackgroundMusic),
-      visualEffects: [...new Set(analyses.flatMap(a => a.visualElements.visualEffects))],
-    };
-  }
-
-  private generateQualityBenchmark(specs: any): any {
-    return {
-      targetResolution: specs.resolution,
-      minBitrate: Math.max(8000000, specs.bitrate), // At least 8 Mbps for quality
-      targetFrameRate: specs.frameRate,
-      audioStandard: {
-        sampleRate: 48000,
-        channels: 2,
-        bitrate: 320000, // 320 kbps AAC
-      },
-      visualStandards: {
-        colorDepth: "10-bit",
-        colorSpace: "rec2020",
-        hdr: false, // Start with SDR for compatibility
-        motionBlur: true,
-        antiAliasing: "MSAA-4x",
-        sharpening: "moderate",
-      },
-      compressionSettings: {
-        codec: "h264",
-        profile: "high",
-        crf: 18, // High quality
-        preset: "slow", // Better compression
-      },
-    };
-  }
-
-  private selectOptimalPipeline(specs: any): VideoGenerationPipeline {
-    // Select best free tools based on requirements
-    return {
-      textToVideo: specs.resolution.width >= 1920 ? "stable-video-diffusion" : "animatediff",
-      voiceSynthesis: specs.hasVoiceover ? "coqui-tts" : "bark",
-      avatarGeneration: "wav2lip", // Most reliable free option
-      audioProcessing: "ffmpeg", // Professional quality, free
-      videoEnhancement: specs.resolution.width < 1920 ? "real-esrgan" : "waifu2x",
-      colorGrading: "opencol-io",
-    };
-  }
-
-  private getFreeAlternatives(): string[] {
-    return [
-      "Stable Video Diffusion - Open source text-to-video model",
-      "Coqui TTS - Professional voice synthesis, completely free",
-      "Wav2Lip - Accurate lip-syncing for avatars",
-      "Real-ESRGAN - AI video upscaling and enhancement",
-      "FFmpeg - Professional video/audio processing",
-      "OpenColorIO - Industry-standard color management",
-      "Blender - 3D animation and video compositing",
-      "DaVinci Resolve (Free) - Professional video editing",
-      "GIMP - Advanced image processing",
-      "Audacity - Audio editing and enhancement",
-    ];
-  }
-
-  async generateFreeVideo(
-    project: VideoProject,
-    options: FreeVideoGenerationOptions = {
-      useOpenSourceModels: true,
-      enableAIUpscaling: true,
-      qualityPreset: "high",
-      freeServicesOnly: true,
+    
+    const colors: string[] = [];
+    for (const [colorName, colorValue] of Object.entries(colorMap)) {
+      if (prompt.includes(colorName)) {
+        colors.push(colorValue);
+      }
     }
-  ): Promise<{
-    videoPath: string;
-    audioPath: string;
-    processingSteps: string[];
-    qualityMetrics: any;
-  }> {
-    const processingSteps: string[] = [];
-    const workDir = path.join(process.cwd(), "temp", project.id);
     
-    try {
-      await fs.mkdir(workDir, { recursive: true });
-      processingSteps.push("Created working directory");
+    return colors.length > 0 ? colors : ['#4F46E5', '#7C3AED']; // Default purple gradient
+  }
 
-      // Step 1: Generate script and enhance prompt
-      let enhancedScript = project.prompt;
-      if (project.settings?.voice?.script) {
-        enhancedScript = project.settings.voice.script;
-      }
-      processingSteps.push("Enhanced script for video generation");
+  private extractMotion(prompt: string): string {
+    if (/fast|speed|quick|rapid/.test(prompt)) return 'fast';
+    if (/slow|calm|gentle|peaceful/.test(prompt)) return 'slow';
+    if (/spin|rotate|circle/.test(prompt)) return 'rotate';
+    if (/wave|flow|fluid/.test(prompt)) return 'wave';
+    if (/zoom|scale|grow/.test(prompt)) return 'zoom';
+    return 'gentle';
+  }
 
-      // Step 2: Generate voice using free TTS
-      const audioPath = await this.generateFreeVoice(enhancedScript, workDir);
-      processingSteps.push("Generated voice using free TTS");
+  private async generateNatureVideo(options: VideoGenerationOptions, outputPath: string, scene: any): Promise<void> {
+    // Create nature-inspired video with moving elements
+    const tempVideoPath = path.join(this.tempDir, `nature_${randomUUID()}.mp4`);
+    
+    await this.runFFmpegCommand([
+      '-f', 'lavfi',
+      '-i', this.createNatureFilter(options, scene),
+      '-t', options.duration.toString(),
+      '-r', '30',
+      '-c:v', 'libx264',
+      '-preset', 'medium',
+      '-crf', '23',
+      '-pix_fmt', 'yuv420p',
+      '-y',
+      tempVideoPath
+    ]);
 
-      // Step 3: Generate base video using free models
-      const baseVideoPath = await this.generateBaseVideo(project, workDir);
-      processingSteps.push("Generated base video using Stable Video Diffusion");
+    // Add text overlay if prompt contains text elements
+    if (scene.keywords.some((k: string) => k.length > 4)) {
+      await this.addTextOverlay(tempVideoPath, outputPath, scene.originalPrompt, options);
+    } else {
+      await fs.copyFile(tempVideoPath, outputPath);
+    }
 
-      // Step 4: Add avatar if needed
-      let avatarVideoPath = baseVideoPath;
-      if (project.settings?.avatar?.id && audioPath) {
-        avatarVideoPath = await this.addFreeAvatar(baseVideoPath, audioPath, workDir);
-        processingSteps.push("Added AI avatar with lip-sync");
-      }
+    await fs.unlink(tempVideoPath).catch(() => {});
+  }
 
-      // Step 5: Add background music and effects
-      const musicVideoPath = await this.addBackgroundAudio(avatarVideoPath, project, workDir);
-      processingSteps.push("Added background music and sound effects");
+  private async generateAbstractVideo(options: VideoGenerationOptions, outputPath: string, scene: any): Promise<void> {
+    const tempVideoPath = path.join(this.tempDir, `abstract_${randomUUID()}.mp4`);
+    
+    await this.runFFmpegCommand([
+      '-f', 'lavfi',
+      '-i', this.createAbstractFilter(options, scene),
+      '-t', options.duration.toString(),
+      '-r', '30',
+      '-c:v', 'libx264',
+      '-preset', 'medium',
+      '-crf', '20',
+      '-pix_fmt', 'yuv420p',
+      '-y',
+      tempVideoPath
+    ]);
 
-      // Step 6: Apply color grading and enhancement
-      const enhancedVideoPath = await this.enhanceVideo(musicVideoPath, options, workDir);
-      processingSteps.push("Applied professional color grading");
+    await this.addTextOverlay(tempVideoPath, outputPath, scene.originalPrompt, options);
+    await fs.unlink(tempVideoPath).catch(() => {});
+  }
 
-      // Step 7: AI upscaling if needed
-      let finalVideoPath = enhancedVideoPath;
-      if (options.enableAIUpscaling) {
-        finalVideoPath = await this.upscaleVideo(enhancedVideoPath, workDir);
-        processingSteps.push("AI upscaled to higher resolution");
-      }
+  private async generateTextVideo(options: VideoGenerationOptions, outputPath: string, scene: any): Promise<void> {
+    // Create text-focused video with animated typography
+    const { width, height } = this.getResolutionDimensions(options.resolution);
+    
+    await this.runFFmpegCommand([
+      '-f', 'lavfi',
+      '-i', `color=c=${scene.colors[0]}:s=${width}x${height}:d=${options.duration}`,
+      '-vf', this.createTextAnimationFilter(scene.originalPrompt, scene.colors, width, height),
+      '-r', '30',
+      '-c:v', 'libx264',
+      '-preset', 'medium',
+      '-crf', '20',
+      '-pix_fmt', 'yuv420p',
+      '-y',
+      outputPath
+    ]);
+  }
 
-      // Step 8: Final compression and optimization
-      const optimizedVideoPath = await this.optimizeVideo(finalVideoPath, options, workDir);
-      processingSteps.push("Optimized final video");
+  private async generateGenericVideo(options: VideoGenerationOptions, outputPath: string, scene: any): Promise<void> {
+    // Create a dynamic generic video with particle effects
+    const tempVideoPath = path.join(this.tempDir, `generic_${randomUUID()}.mp4`);
+    
+    await this.runFFmpegCommand([
+      '-f', 'lavfi',
+      '-i', this.createGenericFilter(options, scene),
+      '-t', options.duration.toString(),
+      '-r', '30',
+      '-c:v', 'libx264',
+      '-preset', 'medium',
+      '-crf', '23',
+      '-pix_fmt', 'yuv420p',
+      '-y',
+      tempVideoPath
+    ]);
 
-      const qualityMetrics = await this.assessQuality(optimizedVideoPath);
+    await this.addTextOverlay(tempVideoPath, outputPath, scene.originalPrompt, options);
+    await fs.unlink(tempVideoPath).catch(() => {});
+  }
 
-      return {
-        videoPath: optimizedVideoPath,
-        audioPath,
-        processingSteps,
-        qualityMetrics,
-      };
+  private createNatureFilter(options: VideoGenerationOptions, scene: any): string {
+    const { width, height } = this.getResolutionDimensions(options.resolution);
+    const speed = scene.motion === 'fast' ? 0.1 : scene.motion === 'slow' ? 0.02 : 0.05;
+    
+    // Create moving gradient that resembles natural phenomena
+    return `color=c=${scene.colors[0]}:s=${width}x${height}[base];` +
+           `[base]geq=` +
+           `r='sin(X/20+T*${speed})*127+128':` +
+           `g='sin(Y/30+T*${speed*0.8})*127+128':` +
+           `b='sin((X+Y)/40+T*${speed*1.2})*127+128'[nature];` +
+           `[nature]noise=alls=10:allf=t+u`;
+  }
 
-    } catch (error) {
-      throw new Error(`Free video generation failed: ${error}`);
+  private createAbstractFilter(options: VideoGenerationOptions, scene: any): string {
+    const { width, height } = this.getResolutionDimensions(options.resolution);
+    const speed = scene.motion === 'fast' ? 0.2 : scene.motion === 'slow' ? 0.03 : 0.08;
+    
+    // Create abstract geometric patterns
+    return `color=c=black:s=${width}x${height}[base];` +
+           `[base]geq=` +
+           `r='if(lt(mod(X+Y+T*${speed*100},60),30),255,0)':` +
+           `g='if(lt(mod(X-Y+T*${speed*80},80),40),255,0)':` +
+           `b='if(lt(mod(X*Y/100+T*${speed*120},100),50),255,0)'[pattern];` +
+           `[pattern]boxblur=2:1`;
+  }
+
+  private createGenericFilter(options: VideoGenerationOptions, scene: any): string {
+    const { width, height } = this.getResolutionDimensions(options.resolution);
+    const speed = scene.motion === 'fast' ? 0.15 : scene.motion === 'slow' ? 0.04 : 0.07;
+    
+    // Create dynamic particle-like effect
+    return `color=c=${scene.colors[0]}:s=${width}x${height}[bg];` +
+           `[bg]geq=` +
+           `r='sin(sqrt((X-${width/2})*(X-${width/2})+(Y-${height/2})*(Y-${height/2}))/10+T*${speed})*127+128':` +
+           `g='cos(sqrt((X-${width/3})*(X-${width/3})+(Y-${height/3})*(Y-${height/3}))/15+T*${speed*0.7})*127+128':` +
+           `b='sin(sqrt((X-${width*2/3})*(X-${width*2/3})+(Y-${height*2/3})*(Y-${height*2/3}))/12+T*${speed*1.3})*127+128'`;
+  }
+
+  private createTextAnimationFilter(text: string, colors: string[], width: number, height: number): string {
+    // Create animated text with fade in/out effects
+    const fontSize = Math.max(24, Math.min(width / 20, 72));
+    return `drawtext=text='${text.replace(/'/g, "\\'")}':` +
+           `fontsize=${fontSize}:fontcolor=white:` +
+           `x=(w-tw)/2:y=(h-th)/2:` +
+           `enable='between(t,0.5,${8})':` +
+           `alpha='if(lt(t,1),t,if(gt(t,7),8-t,1))'`;
+  }
+
+  private async addTextOverlay(inputPath: string, outputPath: string, text: string, options: VideoGenerationOptions): Promise<void> {
+    const { width } = this.getResolutionDimensions(options.resolution);
+    const fontSize = Math.max(16, Math.min(width / 30, 48));
+    
+    // Truncate text if too long
+    const displayText = text.length > 50 ? text.substring(0, 47) + '...' : text;
+    
+    await this.runFFmpegCommand([
+      '-i', inputPath,
+      '-vf', `drawtext=text='${displayText.replace(/'/g, "\\'")}':` +
+             `fontsize=${fontSize}:fontcolor=white:shadowcolor=black:shadowx=2:shadowy=2:` +
+             `x=(w-tw)/2:y=h-th-20:alpha=0.9`,
+      '-c:a', 'copy',
+      '-y',
+      outputPath
+    ]);
+  }
+
+  private getResolutionDimensions(resolution: string): { width: number; height: number } {
+    switch (resolution) {
+      case '720p': return { width: 1280, height: 720 };
+      case '1080p': return { width: 1920, height: 1080 };
+      case '4k': return { width: 3840, height: 2160 };
+      default: return { width: 1280, height: 720 };
     }
   }
 
-  private async generateFreeVoice(script: string, workDir: string): Promise<string> {
-    const audioPath = path.join(workDir, "voice.wav");
-    
-    // Simulate free TTS generation (Coqui TTS or similar)
-    // In a real implementation, this would call Coqui TTS locally
-    const sampleAudio = Buffer.from("FREE_TTS_AUDIO_DATA"); // Placeholder
-    await fs.writeFile(audioPath, sampleAudio);
-    
-    return audioPath;
+  private async runFFmpegCommand(args: string[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const ffmpeg = spawn('ffmpeg', args);
+      
+      ffmpeg.stderr.on('data', (data) => {
+        // Log FFmpeg output for debugging
+        console.log(`FFmpeg: ${data}`);
+      });
+      
+      ffmpeg.on('close', (code) => {
+        if (code === 0) {
+          resolve();
+        } else {
+          reject(new Error(`FFmpeg failed with code ${code}`));
+        }
+      });
+      
+      ffmpeg.on('error', (error) => {
+        reject(error);
+      });
+    });
   }
 
-  private async generateBaseVideo(project: VideoProject, workDir: string): Promise<string> {
-    const videoPath = path.join(workDir, "base_video.mp4");
+  async generateThumbnail(videoPath: string): Promise<string> {
+    const thumbnailPath = videoPath.replace('.mp4', '_thumb.jpg');
     
-    // Simulate Stable Video Diffusion generation
-    // In a real implementation, this would:
-    // 1. Run Stable Video Diffusion model locally
-    // 2. Use the enhanced prompt to generate video
-    // 3. Apply motion settings from project.settings
+    await this.runFFmpegCommand([
+      '-i', videoPath,
+      '-ss', '1',
+      '-vframes', '1',
+      '-y',
+      thumbnailPath
+    ]);
     
-    const sampleVideo = Buffer.from("STABLE_VIDEO_DIFFUSION_DATA"); // Placeholder
-    await fs.writeFile(videoPath, sampleVideo);
-    
-    return videoPath;
-  }
-
-  private async addFreeAvatar(videoPath: string, audioPath: string, workDir: string): Promise<string> {
-    const avatarVideoPath = path.join(workDir, "avatar_video.mp4");
-    
-    // Simulate Wav2Lip processing
-    // In a real implementation, this would:
-    // 1. Extract frames from base video
-    // 2. Use Wav2Lip to generate lip-synced frames
-    // 3. Composite avatar onto original video
-    
-    const avatarVideo = Buffer.from("WAV2LIP_AVATAR_DATA"); // Placeholder
-    await fs.writeFile(avatarVideoPath, avatarVideo);
-    
-    return avatarVideoPath;
-  }
-
-  private async addBackgroundAudio(videoPath: string, project: VideoProject, workDir: string): Promise<string> {
-    const musicVideoPath = path.join(workDir, "music_video.mp4");
-    
-    // Use FFmpeg to add background music and effects (FREE)
-    // ffmpeg -i video.mp4 -i background.mp3 -filter_complex "[1:a]volume=0.3[bg];[0:a][bg]amix=inputs=2" output.mp4
-    
-    const musicVideo = Buffer.from("FFMPEG_AUDIO_MIXED_DATA"); // Placeholder
-    await fs.writeFile(musicVideoPath, musicVideo);
-    
-    return musicVideoPath;
-  }
-
-  private async enhanceVideo(videoPath: string, options: FreeVideoGenerationOptions, workDir: string): Promise<string> {
-    const enhancedVideoPath = path.join(workDir, "enhanced_video.mp4");
-    
-    // Apply professional color grading using OpenColorIO (FREE)
-    // Apply cinematic LUTs
-    // Enhance dynamic range
-    // Sharpen and denoise
-    
-    const enhancedVideo = Buffer.from("ENHANCED_VIDEO_DATA"); // Placeholder
-    await fs.writeFile(enhancedVideoPath, enhancedVideo);
-    
-    return enhancedVideoPath;
-  }
-
-  private async upscaleVideo(videoPath: string, workDir: string): Promise<string> {
-    const upscaledVideoPath = path.join(workDir, "upscaled_video.mp4");
-    
-    // Use Real-ESRGAN for AI upscaling (FREE)
-    // python inference_realesrgan.py -n RealESRGAN_x4plus -i input_video.mp4 -o output_video.mp4
-    
-    const upscaledVideo = Buffer.from("REAL_ESRGAN_UPSCALED_DATA"); // Placeholder
-    await fs.writeFile(upscaledVideoPath, upscaledVideo);
-    
-    return upscaledVideoPath;
-  }
-
-  private async optimizeVideo(videoPath: string, options: FreeVideoGenerationOptions, workDir: string): Promise<string> {
-    const optimizedVideoPath = path.join(workDir, "final_video.mp4");
-    
-    // Final FFmpeg optimization with professional settings
-    const qualitySettings = this.getQualitySettings(options.qualityPreset);
-    
-    // ffmpeg -i input.mp4 -c:v libx264 -crf 18 -preset slow -c:a aac -b:a 320k output.mp4
-    
-    const optimizedVideo = Buffer.from("OPTIMIZED_FINAL_VIDEO"); // Placeholder
-    await fs.writeFile(optimizedVideoPath, optimizedVideo);
-    
-    return optimizedVideoPath;
-  }
-
-  private getQualitySettings(preset: string): any {
-    const settings = {
-      fast: { crf: 23, preset: "fast", bitrate: "3M" },
-      balanced: { crf: 20, preset: "medium", bitrate: "5M" },
-      high: { crf: 18, preset: "slow", bitrate: "8M" },
-      ultra: { crf: 15, preset: "veryslow", bitrate: "12M" },
-    };
-    
-    return settings[preset as keyof typeof settings] || settings.high;
-  }
-
-  private async assessQuality(videoPath: string): Promise<any> {
-    // Assess final video quality
-    return {
-      resolution: "1920x1080",
-      bitrate: "8.5 Mbps",
-      frameRate: "30 fps",
-      colorSpace: "bt709",
-      audioQuality: "320 kbps AAC",
-      estimatedScore: 9.2, // Out of 10
-    };
-  }
-
-  async generateImplementationGuide(): Promise<string> {
-    return `
-# Free Professional Video Generation Implementation Guide
-
-## Required Free Software Stack
-
-### 1. Video Generation Core
-- **Stable Video Diffusion**: Open-source text-to-video model
-- **AnimateDiff**: Motion-aware video generation
-- **Installation**: Available via Hugging Face Transformers
-
-### 2. Voice Synthesis (100% Free)
-- **Coqui TTS**: Professional voice cloning and synthesis
-- **Bark**: High-quality multilingual TTS
-- **Installation**: pip install coqui-tts bark
-
-### 3. Avatar Generation
-- **Wav2Lip**: Accurate lip-syncing from audio
-- **SadTalker**: Emotional talking head generation
-- **Installation**: GitHub repositories with conda environments
-
-### 4. Video Enhancement
-- **Real-ESRGAN**: AI-powered video upscaling
-- **GFPGAN**: Face enhancement and restoration
-- **Installation**: pip install realesrgan gfpgan
-
-### 5. Professional Audio/Video Processing
-- **FFmpeg**: Industry-standard media processing
-- **OpenColorIO**: Professional color management
-- **DaVinci Resolve Free**: Professional video editing
-
-## Implementation Steps for Professional Quality
-
-### Step 1: Text-to-Video Generation
-\`\`\`python
-# Using Stable Video Diffusion
-from diffusers import StableVideoDiffusionPipeline
-import torch
-
-pipe = StableVideoDiffusionPipeline.from_pretrained(
-    "stabilityai/stable-video-diffusion-img2vid-xt"
-)
-pipe.to("cuda")
-
-video_frames = pipe(
-    prompt="Your enhanced prompt here",
-    num_frames=24,
-    motion_bucket_id=127,
-    fps=30,
-    decode_chunk_size=8,
-).frames
-\`\`\`
-
-### Step 2: Free Voice Generation
-\`\`\`python
-# Using Coqui TTS
-from TTS.api import TTS
-
-tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
-tts.tts_to_file(
-    text="Your script here",
-    speaker="your_speaker_name",
-    language="en",
-    file_path="output.wav"
-)
-\`\`\`
-
-### Step 3: Avatar Lip-Sync (Free)
-\`\`\`bash
-# Using Wav2Lip
-python inference.py \\
-    --checkpoint_path checkpoints/wav2lip_gan.pth \\
-    --face video_input.mp4 \\
-    --audio audio_input.wav \\
-    --outfile result_voice.mp4
-\`\`\`
-
-### Step 4: AI Video Enhancement
-\`\`\`bash
-# Real-ESRGAN upscaling
-python inference_realesrgan.py \\
-    -n RealESRGAN_x4plus \\
-    -i input_video.mp4 \\
-    -o upscaled_video.mp4 \\
-    --face_enhance
-\`\`\`
-
-### Step 5: Professional Color Grading (Free)
-\`\`\`bash
-# FFmpeg with professional color grading
-ffmpeg -i input.mp4 \\
-    -vf "colorbalance=rs=0.1:gs=0.05:bs=-0.1,\\
-         curves=all='0/0 0.5/0.4 1/1',\\
-         eq=contrast=1.2:brightness=0.05:saturation=1.1" \\
-    -c:v libx264 -crf 18 -preset slow \\
-    output.mp4
-\`\`\`
-
-## Quality Matching Your Reference Videos
-
-Based on professional video analysis, your target specifications are:
-- **Resolution**: 1920x1080 minimum
-- **Bitrate**: 8+ Mbps for broadcast quality
-- **Frame Rate**: 30 fps smooth
-- **Audio**: 48kHz, 320kbps AAC stereo
-- **Color**: Professional color grading with cinematic LUTs
-- **Enhancement**: AI upscaling and face restoration
-
-## Total Cost: $0 (100% Free)
-
-All software listed is completely free and open-source. No API costs, no subscription fees. Professional quality achievable with proper setup and processing time.
-
-## Hardware Requirements (Optional GPU Acceleration)
-- **Minimum**: 8GB RAM, decent CPU
-- **Recommended**: NVIDIA GPU with 8GB+ VRAM for faster processing
-- **Alternative**: Use Google Colab (free GPU access)
-
-This approach can match or exceed the quality of expensive commercial services while maintaining complete cost-free operation.
-`;
+    return thumbnailPath;
   }
 }
-
-export const freeVideoGeneratorService = new FreeVideoGeneratorService();
