@@ -274,6 +274,9 @@ export class MemStorage implements IStorage {
       resolution: insertProject.resolution || "720p",
       aspectRatio: insertProject.aspectRatio || "16:9",
       status: insertProject.status || "pending",
+      negativePrompt: insertProject.negativePrompt || null,
+      videoUrl: insertProject.videoUrl || null,
+      thumbnailUrl: insertProject.thumbnailUrl || null,
       createdAt: now,
       updatedAt: now,
     };
