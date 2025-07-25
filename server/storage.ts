@@ -267,16 +267,19 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const now = new Date();
     const project: VideoProject = {
-      ...insertProject,
       id,
+      userId: insertProject.userId,
+      title: insertProject.title,
+      prompt: insertProject.prompt,
+      negativePrompt: insertProject.negativePrompt || null,
       style: insertProject.style || "cinematic",
       duration: insertProject.duration || 8,
       resolution: insertProject.resolution || "720p",
       aspectRatio: insertProject.aspectRatio || "16:9",
       status: insertProject.status || "pending",
-      negativePrompt: insertProject.negativePrompt || null,
       videoUrl: insertProject.videoUrl || null,
       thumbnailUrl: insertProject.thumbnailUrl || null,
+      settings: insertProject.settings || null,
       createdAt: now,
       updatedAt: now,
     };
