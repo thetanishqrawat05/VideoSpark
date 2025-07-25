@@ -250,9 +250,13 @@ export default function Home() {
 
       const project = await projectResponse.json();
 
-      // Then start generation
-      const generationResponse = await apiRequest("POST", "/api/generate-video", {
-        projectId: project.id,
+      // Use direct video generation
+      const generationResponse = await apiRequest("POST", "/api/generate-video-direct", {
+        prompt,
+        style,
+        duration: parseInt(duration),
+        resolution,
+        aspectRatio
       });
 
       return generationResponse.json();

@@ -576,16 +576,16 @@ export default function VideoStudio() {
                     <div className="space-y-2">
                       <Label>Background Music</Label>
                       <Select
-                        value={projectSettings.backgroundMusic || ""}
+                        value={projectSettings.backgroundMusic || "none"}
                         onValueChange={(value) => 
-                          setProjectSettings(prev => ({ ...prev, backgroundMusic: value || undefined }))
+                          setProjectSettings(prev => ({ ...prev, backgroundMusic: value === "none" ? undefined : value }))
                         }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select background music" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">No Background Music</SelectItem>
+                          <SelectItem value="none">No Background Music</SelectItem>
                           {backgroundMusicTracks.map((track: any) => (
                             <SelectItem key={track.id} value={track.url}>
                               {track.name}
